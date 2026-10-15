@@ -1,0 +1,1250 @@
+
+/* ========================================
+   DO IT LAB — GALVENAIS DIZAINA STILS
+   ======================================== */
+
+.site-shell {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+/* Navigācija */
+
+.site-header {
+  position: relative;
+  z-index: 10;
+  background: rgba(247, 245, 238, 0.94);
+  border-bottom: 1px solid rgba(40, 45, 40, 0.08);
+}
+
+.header-inner {
+  width: min(100% - 100px, 1360px);
+  min-height: 88px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.brand-mark {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  color: var(--color-green);
+}
+
+.brand-mark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.brand-name {
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -1px;
+}
+
+.brand-name strong {
+  color: var(--color-green);
+  font-weight: 800;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 2.3vw, 36px);
+}
+
+.nav-link {
+  position: relative;
+  padding: 12px 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--color-green);
+}
+
+.nav-link.active::after {
+  position: absolute;
+  right: 0;
+  bottom: 3px;
+  left: 0;
+  height: 2px;
+  border-radius: 5px;
+  background: var(--color-green);
+  content: '';
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-shrink: 0;
+}
+
+.login-link {
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.login-link:hover {
+  color: var(--color-green);
+}
+
+/* Pogas */
+
+.button {
+  min-height: 49px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 23px;
+  border: 1px solid transparent;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.button svg,
+.text-link svg,
+.category-arrow svg,
+.image-arrow svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.button-primary {
+  color: #fff;
+  background: var(--color-green);
+  box-shadow: 0 5px 14px rgba(40, 89, 67, 0.14);
+}
+
+.button-primary:hover {
+  background: var(--color-green-dark);
+  box-shadow: 0 8px 20px rgba(40, 89, 67, 0.2);
+}
+
+.button-secondary {
+  color: var(--color-green);
+  background: transparent;
+  border-color: var(--color-border);
+}
+
+.button-secondary:hover {
+  background: var(--color-green-light);
+  border-color: var(--color-green-soft);
+}
+
+.header-register {
+  min-height: 43px;
+  padding-inline: 18px;
+  font-size: 13px;
+}
+
+/* Sākuma sadaļa */
+
+.hero-section {
+  width: min(100% - 100px, 1360px);
+  min-height: 620px;
+  margin: 0 auto;
+  padding: 76px 0 82px;
+  display: grid;
+  grid-template-columns: 1fr 0.96fr;
+  align-items: center;
+  gap: clamp(45px, 6vw, 100px);
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+  padding: 12px 0;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-green);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.eyebrow-line {
+  width: 25px;
+  height: 2px;
+  border-radius: 5px;
+  background: var(--color-accent);
+}
+
+.hero-copy h1 {
+  margin: 24px 0 23px;
+  font-size: clamp(52px, 5.4vw, 79px);
+  line-height: 1.07;
+  letter-spacing: -5px;
+  font-weight: 700;
+}
+
+.hero-copy h1 span {
+  color: var(--color-green);
+  font-family: Georgia, serif;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -4px;
+}
+
+.hero-description {
+  max-width: 490px;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 31px;
+}
+
+.hero-note {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 40px;
+}
+
+.hero-note p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.hero-note p strong {
+  color: var(--color-text);
+  font-size: 13px;
+}
+
+.mini-avatars {
+  display: flex;
+  padding-left: 3px;
+}
+
+.mini-avatars span {
+  width: 35px;
+  height: 35px;
+  margin-left: -4px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--color-bg);
+  border-radius: 50%;
+  color: var(--color-green-dark);
+  background: var(--color-green-soft);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.mini-avatars span:nth-child(2) {
+  color: #78562C;
+  background: #F0DCC1;
+}
+
+.mini-avatars span:nth-child(3) {
+  color: #67517B;
+  background: #E6DCEF;
+}
+
+.hero-decoration {
+  position: absolute;
+  color: var(--color-accent);
+  pointer-events: none;
+}
+
+.decoration-star {
+  top: 5px;
+  right: 10%;
+  font-size: 35px;
+}
+
+.hero-visual {
+  position: relative;
+  min-width: 0;
+  padding: 0 8px 24px 0;
+}
+
+.hero-photo-frame {
+  position: relative;
+  height: clamp(390px, 39vw, 510px);
+  overflow: hidden;
+  border-radius: 46% 46% 22px 22px;
+  background: var(--color-green-soft);
+  box-shadow: var(--shadow-md);
+}
+
+.hero-photo-frame::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: inherit;
+  content: '';
+  pointer-events: none;
+}
+
+.hero-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.7s ease;
+}
+
+.hero-photo-frame:hover .hero-photo {
+  transform: scale(1.035);
+}
+
+.floating-note {
+  position: absolute;
+  bottom: 73px;
+  left: -42px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 16px 21px;
+  border: 1px solid rgba(40, 45, 40, 0.05);
+  border-radius: 17px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.floating-note-icon {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--color-green);
+  background: var(--color-green-light);
+  font-size: 21px;
+}
+
+.floating-note div {
+  display: grid;
+  gap: 4px;
+}
+
+.floating-note strong {
+  font-family: var(--font-heading);
+  font-size: 13px;
+}
+
+.floating-note div span {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.hero-photo-caption {
+  position: absolute;
+  right: 22px;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.caption-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-green);
+}
+
+.decoration-spark {
+  top: 10px;
+  right: -10px;
+  font-size: 44px;
+}
+
+/* Ieguvumu josla */
+
+.benefits-strip {
+  width: min(100% - 100px, 1360px);
+  margin: 0 auto;
+  padding: 27px 34px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  border: 1px solid rgba(40, 45, 40, 0.06);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.benefit-icon {
+  width: 49px;
+  height: 49px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 16px;
+  color: var(--color-green);
+  background: var(--color-green-light);
+  font-size: 24px;
+}
+
+.benefit-item:nth-child(2) .benefit-icon {
+  color: #8A6534;
+  background: #F5E9D7;
+}
+
+.benefit-item:nth-child(3) .benefit-icon {
+  color: #6A5C87;
+  background: #ECE6F4;
+}
+
+.benefit-item h3 {
+  margin: 0 0 5px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.benefit-item p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+/* Kopīgie sadaļu stili */
+
+.categories-section,
+.projects-section {
+  width: min(100% - 100px, 1360px);
+  margin: 0 auto;
+}
+
+.categories-section {
+  padding-top: 112px;
+}
+
+.projects-section {
+  padding-top: 116px;
+  padding-bottom: 110px;
+}
+
+.section-heading {
+  margin-bottom: 35px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.section-heading h2 {
+  margin: 12px 0 0;
+  font-size: clamp(30px, 3vw, 42px);
+  letter-spacing: -1.8px;
+}
+
+.section-heading h2 span {
+  color: var(--color-green);
+}
+
+.section-heading > p {
+  margin: 0 0 5px;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+/* Kategorijas */
+
+.category-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.category-card {
+  min-width: 0;
+  min-height: 190px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.62);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  border-color: #C6D7C0;
+  box-shadow: var(--shadow-md);
+}
+
+.category-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 23px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  color: var(--color-green);
+  background: var(--color-green-light);
+  font-size: 27px;
+}
+
+.category-card:nth-child(2) .category-icon {
+  color: #98703C;
+  background: #F5E9D7;
+}
+
+.category-card:nth-child(3) .category-icon {
+  color: #527957;
+  background: #E4EBDD;
+}
+
+.category-card:nth-child(4) .category-icon {
+  color: #78658E;
+  background: #ECE6F4;
+}
+
+.category-name {
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.category-count {
+  margin-top: 7px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.category-arrow {
+  width: 32px;
+  height: 32px;
+  margin-top: -20px;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-green);
+  background: var(--color-green-light);
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.category-card:hover .category-arrow {
+  color: #fff;
+  background: var(--color-green);
+}
+
+/* Projektu sadaļa */
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+  color: var(--color-green);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.text-link:hover {
+  color: var(--color-green-dark);
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.project-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(40, 45, 40, 0.08);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+
+.project-image-link {
+  position: relative;
+  height: 225px;
+  display: block;
+  overflow: hidden;
+  background: var(--color-green-light);
+}
+
+.project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.project-card:hover .project-image {
+  transform: scale(1.055);
+}
+
+.status-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 100px;
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.94);
+  font-size: 10px;
+  font-weight: 800;
+  backdrop-filter: blur(10px);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5A8B5B;
+}
+
+.status-badge.progress .status-dot {
+  background: #D99B38;
+}
+
+.status-badge.planned .status-dot {
+  background: #8B84B7;
+}
+
+.image-arrow {
+  position: absolute;
+  right: 13px;
+  bottom: 13px;
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  transform: translateY(7px);
+  border-radius: 50%;
+  color: var(--color-green);
+  background: #fff;
+  opacity: 0;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.project-card:hover .image-arrow {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.project-card-content {
+  padding: 19px 18px 16px;
+}
+
+.project-category {
+  color: var(--color-green);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.project-card h3 {
+  min-height: 48px;
+  margin: 10px 0 17px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.project-card-footer {
+  padding-top: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid #F0F0E9;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.author-avatar {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-green-dark);
+  background: var(--color-green-soft);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.project-likes {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.project-likes span {
+  margin-right: 3px;
+  color: var(--color-danger);
+  font-size: 17px;
+  vertical-align: -1px;
+}
+
+/* Noslēguma aicinājums */
+
+.community-banner {
+  position: relative;
+  width: min(100% - 100px, 1360px);
+  min-height: 400px;
+  margin: 0 auto 90px;
+  padding: 56px 7%;
+  display: grid;
+  grid-template-columns: 1.1fr 0.8fr;
+  align-items: center;
+  gap: 45px;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  color: #fff;
+  background: var(--color-green);
+}
+
+.community-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.community-copy .eyebrow {
+  color: #D7E6D2;
+}
+
+.community-copy h2 {
+  margin: 20px 0 18px;
+  color: #fff;
+  font-size: clamp(33px, 4vw, 50px);
+  letter-spacing: -2px;
+  line-height: 1.2;
+}
+
+.community-copy h2 span {
+  color: #D7E6D2;
+  font-family: Georgia, serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.community-copy > p {
+  max-width: 410px;
+  margin: 0 0 25px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1.9;
+}
+
+.button-light {
+  color: var(--color-green-dark);
+  background: #fff;
+}
+
+.button-light:hover {
+  background: var(--color-green-light);
+  box-shadow: var(--shadow-md);
+}
+
+.community-visual {
+  position: relative;
+  height: 275px;
+}
+
+.community-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 6px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  transform: rotate(2deg);
+}
+
+.community-sticker {
+  position: absolute;
+  right: -14px;
+  bottom: -17px;
+  padding: 13px 19px;
+  transform: rotate(-5deg);
+  border-radius: 12px;
+  color: var(--color-green-dark);
+  background: #F0D9AE;
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.community-decoration {
+  position: absolute;
+  top: -38px;
+  right: 43%;
+  color: rgba(255, 255, 255, 0.08);
+  font-size: 230px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Kājene */
+
+.site-footer {
+  width: min(100% - 100px, 1360px);
+  min-height: 110px;
+  margin: 0 auto;
+  padding: 27px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.site-footer .brand-mark {
+  width: 35px;
+  height: 35px;
+}
+
+.site-footer .brand-name {
+  font-size: 20px;
+}
+
+.site-footer > p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.footer-copyright {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+/* Planšetdatori */
+
+@media (max-width: 1100px) {
+  .header-inner,
+  .hero-section,
+  .benefits-strip,
+  .categories-section,
+  .projects-section,
+  .community-banner,
+  .site-footer {
+    width: calc(100% - 56px);
+  }
+
+  .header-inner {
+    gap: 18px;
+  }
+
+  .main-nav {
+    gap: 17px;
+  }
+
+  .header-actions {
+    gap: 14px;
+  }
+
+  .hero-section {
+    gap: 42px;
+    min-height: 560px;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(48px, 6vw, 65px);
+    letter-spacing: -3px;
+  }
+
+  .hero-photo-frame {
+    height: 420px;
+  }
+
+  .project-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .project-image-link {
+    height: 260px;
+  }
+
+  .benefits-strip {
+    padding: 24px;
+    gap: 18px;
+  }
+
+  .benefit-item {
+    align-items: flex-start;
+    gap: 11px;
+  }
+
+  .benefit-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    font-size: 20px;
+  }
+}
+
+/* Mazāki ekrāni */
+
+@media (max-width: 760px) {
+  .header-inner,
+  .hero-section,
+  .benefits-strip,
+  .categories-section,
+  .projects-section,
+  .community-banner,
+  .site-footer {
+    width: calc(100% - 36px);
+  }
+
+  .header-inner {
+    min-height: 76px;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 13px 0;
+  }
+
+  .brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .brand-name {
+    font-size: 21px;
+  }
+
+  .header-actions {
+    gap: 12px;
+  }
+
+  .header-register {
+    min-height: 39px;
+    padding-inline: 13px;
+    font-size: 12px;
+  }
+
+  .login-link {
+    font-size: 12px;
+  }
+
+  .main-nav {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 24px;
+    overflow-x: auto;
+  }
+
+  .nav-link {
+    flex-shrink: 0;
+    font-size: 12px;
+  }
+
+  .hero-section {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 59px 0 56px;
+  }
+
+  .hero-copy h1 {
+    margin: 20px 0;
+    font-size: clamp(48px, 10vw, 68px);
+    letter-spacing: -3px;
+  }
+
+  .hero-copy h1 span {
+    letter-spacing: -2px;
+  }
+
+  .hero-description {
+    font-size: 14px;
+  }
+
+  .hero-actions {
+    gap: 10px;
+  }
+
+  .button {
+    min-height: 46px;
+    padding-inline: 17px;
+    font-size: 12px;
+  }
+
+  .hero-note {
+    margin-top: 28px;
+  }
+
+  .hero-visual {
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .hero-photo-frame {
+    height: clamp(310px, 88vw, 440px);
+    border-radius: 43% 43% 20px 20px;
+  }
+
+  .floating-note {
+    bottom: 62px;
+    left: -5px;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .floating-note-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .hero-photo-caption {
+    right: 7px;
+    font-size: 10px;
+  }
+
+  .benefits-strip {
+    grid-template-columns: 1fr;
+    gap: 23px;
+    padding: 25px;
+  }
+
+  .benefit-item {
+    align-items: center;
+  }
+
+  .categories-section {
+    padding-top: 78px;
+  }
+
+  .projects-section {
+    padding-top: 82px;
+    padding-bottom: 75px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
+
+  .section-heading h2 {
+    font-size: 32px;
+  }
+
+  .section-heading > p {
+    font-size: 12px;
+  }
+
+  .category-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .category-card {
+    min-height: 165px;
+    padding: 16px;
+  }
+
+  .category-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 17px;
+    font-size: 23px;
+  }
+
+  .category-name {
+    font-size: 12px;
+  }
+
+  .category-count {
+    font-size: 10px;
+  }
+
+  .category-arrow {
+    width: 27px;
+    height: 27px;
+    margin-top: -16px;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .project-image-link {
+    height: clamp(230px, 65vw, 350px);
+  }
+
+  .project-card h3 {
+    min-height: auto;
+  }
+
+  .image-arrow {
+    transform: none;
+    opacity: 1;
+  }
+
+  .community-banner {
+    grid-template-columns: 1fr;
+    gap: 35px;
+    margin-bottom: 55px;
+    padding: 38px 25px 43px;
+    border-radius: 24px;
+  }
+
+  .community-copy h2 {
+    font-size: 37px;
+  }
+
+  .community-visual {
+    height: 230px;
+    margin: 0 7px 12px 0;
+  }
+
+  .community-sticker {
+    right: -6px;
+    font-size: 10px;
+  }
+
+  .site-footer {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 25px 0;
+  }
+
+  .site-footer > p {
+    order: 3;
+    width: 100%;
+  }
+}
+
+/* Ļoti mazi ekrāni */
+
+@media (max-width: 390px) {
+  .header-actions {
+    gap: 8px;
+  }
+
+  .header-register {
+    padding-inline: 10px;
+  }
+
+  .brand-name {
+    font-size: 19px;
+  }
+
+  .hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .hero-actions .button {
+    width: 100%;
+  }
+
+  .category-card {
+    padding: 13px;
+  }
+
+  .category-name {
+    font-size: 11px;
+  }
+}
+
+/* Samazinātas kustības pieejamības iestatījums */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
