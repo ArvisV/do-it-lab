@@ -3,6 +3,7 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
 import './AuthPages.css'
+import Logo from '../components/Logo'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -73,10 +74,7 @@ export default function RegisterPage() {
   return (
     <main className="auth-page">
       <section className="auth-visual">
-        <Link to="/" className="auth-brand">
-          <span className="auth-brand-icon">✳</span>
-          <span>Do It <strong>Lab</strong></span>
-        </Link>
+        <Logo light />
 
         <div className="auth-visual-copy">
           <span className="eyebrow">Radi. Mācies. Dalies.</span>
@@ -107,10 +105,7 @@ export default function RegisterPage() {
       <section className="auth-form-side">
         <div className="auth-form-container">
           <div className="auth-mobile-brand">
-            <Link to="/" className="auth-brand">
-              <span className="auth-brand-icon">✳</span>
-              <span>Do It <strong>Lab</strong></span>
-            </Link>
+            <Logo />
           </div>
 
           <div className="auth-heading">
