@@ -1,4 +1,5 @@
-
+import { Routes, Route, Navigate } from 'react-router-dom'
+import RegisterPage from './pages/RegisterPage'
 import './App.css'
 
 const projects = [
@@ -44,12 +45,6 @@ const projects = [
   },
 ]
 
-const categories = [
-  { icon: '✳', name: 'DIY un māja', count: '28 projekti' },
-  { icon: '⌘', name: 'Elektronika', count: '18 projekti' },
-  { icon: '♧', name: 'Dārzs un daba', count: '24 projekti' },
-  { icon: '✿', name: 'Roku darbi', count: '16 projekti' },
-]
 
 function Logo() {
   return (
@@ -148,7 +143,7 @@ function ProjectCard({
   )
 }
 
-function App() {
+function HomePage() {
   return (
     <div className="site-shell" id="sakums">
       <header className="site-header">
@@ -156,25 +151,19 @@ function App() {
           <Logo />
 
           <nav className="main-nav" aria-label="Galvenā navigācija">
-            <a className="nav-link active" href="#sakums">
-              Sākums
-            </a>
-            <a className="nav-link" href="#projekti">
-              Projekti
-            </a>
-            <a className="nav-link" href="#kategorijas">
-              Kategorijas
-            </a>
             <a className="nav-link" href="#par-mums">
               Par mums
             </a>
           </nav>
 
           <div className="header-actions">
-            <a className="login-link" href="#pieteiksanas">
+            <a className="login-link" href="/login">
               Pieteikties
             </a>
-            <a className="button button-primary header-register" href="#registracija">
+            <a
+              className="button button-primary header-register"
+              href="/register"
+            >
               Reģistrēties <ArrowIcon />
             </a>
           </div>
@@ -196,118 +185,35 @@ function App() {
             </h1>
 
             <p className="hero-description">
-              Vieta, kur hobiji pārtop īstos darbos. Dalies savā
-              pieredzē, mācies no citiem un parādi, kā top tavas idejas.
+              Vieta, kur hobiji pārtop īstos darbos.
+              Dalies savā pieredzē, mācies no citiem
+              un parādi, kā top tavas idejas.
             </p>
 
             <div className="hero-actions">
               <a className="button button-primary" href="#projekti">
-                Atklāt projektus <ArrowIcon />
+                Apskatīt projektus <ArrowIcon />
               </a>
-              <a className="button button-secondary" href="#registracija">
+
+              <a className="button button-secondary" href="/register">
                 Pievienoties kopienai
               </a>
             </div>
-
-            <div className="hero-note">
-              <div className="mini-avatars" aria-hidden="true">
-                <span>A</span>
-                <span>J</span>
-                <span>L</span>
-              </div>
-              <p>
-                <strong>Idejas aug kopā.</strong>
-                <br />
-                Iedvesmojies no citu pieredzes.
-              </p>
-            </div>
-
-            <span className="hero-decoration decoration-star" aria-hidden="true">
-              ✳
-            </span>
           </div>
 
           <div className="hero-visual">
             <div className="hero-photo-frame">
               <img
-                src="https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=1400&q=90"
-                alt="Radoša darba vieta ar augiem un dabīgiem materiāliem"
+                src="https://www.marapon.com/cdn/shop/articles/diy_3a8f7fae-5c6c-48e1-bd47-5abd6298a295.png?v=1772627057&width=1500"
+                alt="Radoša darba vieta ar augiem un galda lampu"
                 className="hero-photo"
               />
-            </div>
-
-            <div className="floating-note">
-              <span className="floating-note-icon">✳</span>
-              <div>
-                <strong>Radi ar prieku</strong>
-                <span>Sāc ar mazu ideju</span>
-              </div>
             </div>
 
             <div className="hero-photo-caption">
               <span className="caption-dot" />
               <span>Radīts paša rokām</span>
             </div>
-
-            <span className="hero-decoration decoration-spark" aria-hidden="true">
-              ✧
-            </span>
-          </div>
-        </section>
-
-        <section className="benefits-strip" id="par-mums">
-          <div className="benefit-item">
-            <span className="benefit-icon">✳</span>
-            <div>
-              <h3>Dalies ar saviem darbiem</h3>
-              <p>Parādi ne tikai rezultātu, bet arī procesu.</p>
-            </div>
-          </div>
-
-          <div className="benefit-item">
-            <span className="benefit-icon">⌘</span>
-            <div>
-              <h3>Mācies no citiem</h3>
-              <p>Atklāj jaunas idejas un paņēmienus.</p>
-            </div>
-          </div>
-
-          <div className="benefit-item">
-            <span className="benefit-icon">♧</span>
-            <div>
-              <h3>Attīsti savas prasmes</h3>
-              <p>Katrs projekts ir solis uz priekšu.</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="categories-section" id="kategorijas">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">Atrodi savu virzienu</span>
-              <h2>Kas tevi aizrauj?</h2>
-            </div>
-            <p>
-              No pirmajiem mēģinājumiem līdz
-              <br className="desktop-break" /> projektiem, ar kuriem lepoties.
-            </p>
-          </div>
-
-          <div className="category-list">
-            {categories.map((category) => (
-              <a
-                className="category-card"
-                href="#projekti"
-                key={category.name}
-              >
-                <span className="category-icon">{category.icon}</span>
-                <span className="category-name">{category.name}</span>
-                <span className="category-count">{category.count}</span>
-                <span className="category-arrow">
-                  <ArrowIcon />
-                </span>
-              </a>
-            ))}
           </div>
         </section>
 
@@ -315,11 +221,10 @@ function App() {
           <div className="section-heading">
             <div>
               <span className="eyebrow">Iedvesmojies un radi</span>
-              <h2>Idejas, kas kļūst īstas<span>.</span></h2>
+              <h2>
+                Idejas, kas kļūst īstas<span>.</span>
+              </h2>
             </div>
-            <a className="text-link" href="#projekti">
-              Visi projekti <ArrowIcon />
-            </a>
           </div>
 
           <div className="project-grid">
@@ -329,34 +234,11 @@ function App() {
           </div>
         </section>
 
-        <section className="community-banner" id="registracija">
-          <div className="community-decoration" aria-hidden="true">
-            ✳
-          </div>
-          <div className="community-copy">
-            <span className="eyebrow">Tava ideja ir sākums</span>
-            <h2>
-              Tev ir ideja?
-              <br />
-              <span>Parādi, ko vari radīt.</span>
-            </h2>
-            <p>
-              Pievienojies cilvēkiem, kuriem patīk izmēģināt,
-              mācīties un radīt ko jaunu.
-            </p>
-            <a className="button button-light" href="#registracija">
-              Sākt savu projektu <ArrowIcon />
-            </a>
-          </div>
-
-          <div className="community-visual">
-            <img
-              src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1000&q=85"
-              alt="Piezīmes un radošas idejas darba vietā"
-              loading="lazy"
-            />
-            <span className="community-sticker">Radi. Mācies. Dalies.</span>
-          </div>
+        <section className="about-strip" id="par-mums">
+          <p>
+            Do It Lab ir vieta, kur dalīties ar saviem hobiju projektiem,
+            dokumentēt to tapšanu un iedvesmoties no citiem.
+          </p>
         </section>
       </main>
 
@@ -366,6 +248,16 @@ function App() {
         <span className="footer-copyright">© 2026 Do It Lab</span>
       </footer>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   )
 }
 
