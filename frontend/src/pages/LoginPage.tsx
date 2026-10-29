@@ -39,7 +39,7 @@ export default function LoginPage() {
         return
       }
 
-      navigate('/')
+      navigate('/dashboard')
     } catch {
       setError(
         'Neizdevās sazināties ar serveri. Pārbaudi, vai backend darbojas.',

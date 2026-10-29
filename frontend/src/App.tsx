@@ -3,6 +3,7 @@ import RegisterPage from './pages/RegisterPage'
 import './App.css'
 import Logo from './components/Logo'
 import LoginPage from './pages/LoginPage'
+import DashboardPage from './pages/DashboardPage'
 
 const projects = [
   {
@@ -227,6 +228,7 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/dashboard" element={<DashboardPage />} />
     </Routes>
   )
 }
