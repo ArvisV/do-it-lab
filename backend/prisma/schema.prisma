@@ -18,7 +18,8 @@ model User {
   updatedAt         DateTime @updatedAt
 
   emailVerifications EmailVerification[]
-  sessions Session[]
+  sessions           Session[]
+  projects            Project[]
 }
 
 model EmailVerification {
@@ -35,7 +36,6 @@ model EmailVerification {
   @@index([userId, expiresAt])
 }
 
-
 model Session {
   id        String   @id @default(uuid())
   userId    String
@@ -46,4 +46,49 @@ model Session {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, expiresAt])
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  imagePath   String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId     String
+  categoryId String?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  steps    ProjectStep[]
+
+  @@index([userId, createdAt])
+  @@index([categoryId])
+  @@index([isPublished, createdAt])
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  projects Project[]
+}
+
+model ProjectStep {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  materials   String?  @db.Text
+  stepNumber  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, stepNumber])
+  @@index([projectId, stepNumber])
 }

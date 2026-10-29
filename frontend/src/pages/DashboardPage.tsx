@@ -208,26 +208,28 @@ export default function DashboardPage() {
             <span>Sākums</span>
           </a>
 
-          <a className="dashboard-nav-link" href="#projekti">
-            <Folder className="nav-icon" />
-            <span>Projektu katalogs</span>
-          </a>
-
           <button
             className="dashboard-nav-link"
-            onClick={() =>
-              setNotice('Projektu izveides formu izveidosim nākamajā solī.')
-            }
+            onClick={() => navigate('/projects')}
+          >
+            <Folder className="nav-icon" />
+            <span>Projektu katalogs</span>
+          </button>
+
+          
+        
+          <button
+            className="dashboard-nav-link"
+            onClick={() => navigate('/projects/new')}
           >
             <CirclePlus className="nav-icon" />
             <span>Izveidot projektu</span>
           </button>
 
+
   <button
     className="dashboard-nav-link"
-    onClick={() =>
-      setNotice('Sadaļu “Mani projekti” izveidosim vēlāk.')
-    }
+    onClick={() => navigate('/projects/mine')}
   >
     <Bookmark className="nav-icon" />
     <span>Mani projekti</span>
@@ -235,9 +237,7 @@ export default function DashboardPage() {
 
   <button
     className="dashboard-nav-link"
-    onClick={() =>
-      setNotice('Saglabāto projektu sadaļu izveidosim vēlāk.')
-    }
+    onClick={() => navigate('/projects/new')}
   >
     <Heart className="nav-icon" />
     <span>Saglabātie</span>
@@ -349,11 +349,8 @@ export default function DashboardPage() {
 
             <button
               className="dashboard-primary-button create-project-button"
-              onClick={() =>
-                setNotice(
-                  'Projektu izveides formu izveidosim nākamajā solī.',
-                )
-              }
+              onClick={() => navigate('/projects/new')}
+              
             >
               <span>＋</span> Izveidot projektu
             </button>

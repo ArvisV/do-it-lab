@@ -4,6 +4,9 @@ import './App.css'
 import Logo from './components/Logo'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
+import CreateProjectPage from './pages/CreateProjectPage'
+import MyProjectsPage from './pages/MyProjectsPage'
+import ProjectCatalogPage from './pages/ProjectCatalogPage'
 
 const projects = [
   {
@@ -229,6 +232,9 @@ function App() {
       <Route path="*" element={<Navigate to="/" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/projects/new" element={<CreateProjectPage />} />
+      <Route path="/projects/mine" element={<MyProjectsPage />} />
+      <Route path="/projects" element={<ProjectCatalogPage />} />
     </Routes>
   )
 }
