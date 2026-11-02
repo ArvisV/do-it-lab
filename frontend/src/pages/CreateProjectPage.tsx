@@ -1,21 +1,83 @@
 
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import './CreateProjectPage.css'
 
 const API_URL = 'http://localhost:5000/api'
+
+type Category = {
+  id: string
+  name: string
+}
 
 export default function CreateProjectPage() {
   const navigate = useNavigate()
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [categoryId, setCategoryId] = useState('')
+
+  const [categories, setCategories] = useState<Category[]>([])
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [categoryError, setCategoryError] = useState('')
+
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
+
+  // Ielādē kategorijas no datubāzes.
+  useEffect(() => {
+    let active = true
+
+    async function loadCategories() {
+      try {
+        const response = await fetch(`${API_URL}/categories`)
+
+        if (!response.ok) {
+          throw new Error('Neizdevās ielādēt kategorijas.')
+        }
+
+        const data = await response.json() as {
+          categories?: Category[]
+        }
+
+        if (!Array.isArray(data.categories)) {
+          throw new Error('Saņemts nederīgs kategoriju saraksts.')
+        }
+
+        if (active) {
+          setCategories(data.categories)
+        }
+      } catch (err) {
+        if (active) {
+          setCategoryError(
+            err instanceof Error
+              ? err.message
+              : 'Neizdevās ielādēt kategorijas.',
+          )
+        }
+      } finally {
+        if (active) {
+          setCategoriesLoading(false)
+        }
+      }
+    }
+
+    void loadCategories()
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError('')
+
+    if (!categoryId) {
+      setError('Lūdzu, izvēlies projekta kategoriju.')
+      return
+    }
+
     setSaving(true)
 
     try {
@@ -28,6 +90,7 @@ export default function CreateProjectPage() {
         body: JSON.stringify({
           title: title.trim(),
           description: description.trim(),
+          categoryId,
         }),
       })
 
@@ -66,16 +129,21 @@ export default function CreateProjectPage() {
         </Link>
 
         <div className="create-project-heading">
-          <span className="create-project-eyebrow">Tava ideja sākas šeit</span>
+          <span className="create-project-eyebrow">
+            Tava ideja sākas šeit
+          </span>
           <h1>Izveido projektu</h1>
           <p>
-            Apraksti savu ideju. Vēlāk varēsi pievienot projekta posmus,
-            nepieciešamos materiālus un attēlus.
+            Apraksti savu ideju. Vēlāk varēsi pievienot projekta
+            posmus, nepieciešamos materiālus un attēlus.
           </p>
         </div>
 
         <form className="create-project-form" onSubmit={handleSubmit}>
-          <label htmlFor="project-title">Projekta nosaukums</label>
+          <label htmlFor="project-title">
+            Projekta nosaukums
+          </label>
+
           <input
             id="project-title"
             value={title}
@@ -85,7 +153,40 @@ export default function CreateProjectPage() {
             required
           />
 
-          <label htmlFor="project-description">Projekta apraksts</label>
+          <label htmlFor="project-category">
+            Projekta kategorija
+          </label>
+
+          <select
+            id="project-category"
+            value={categoryId}
+            onChange={(event) => setCategoryId(event.target.value)}
+            required
+            disabled={categoriesLoading || categories.length === 0}
+          >
+            <option value="">
+              {categoriesLoading
+                ? 'Ielādē kategorijas...'
+                : 'Izvēlies projekta kategoriju'}
+            </option>
+
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+
+          {categoryError && (
+            <p className="create-project-error" role="alert">
+              {categoryError}
+            </p>
+          )}
+
+          <label htmlFor="project-description">
+            Projekta apraksts
+          </label>
+
           <textarea
             id="project-description"
             value={description}
@@ -106,7 +207,16 @@ export default function CreateProjectPage() {
             <Link to="/dashboard" className="create-project-cancel">
               Atcelt
             </Link>
-            <button type="submit" disabled={saving}>
+
+            <button
+              type="submit"
+              disabled={
+                saving ||
+                categoriesLoading ||
+                categories.length === 0 ||
+                Boolean(categoryError)
+              }
+            >
               {saving ? 'Saglabā...' : 'Izveidot projektu'}
             </button>
           </div>

@@ -6,6 +6,7 @@ import authRouter from "./routes/auth.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import projectsRouter from "./routes/projects.js";
+import categoriesRouter from "./routes/categories.js";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/projects", projectsRouter);
+app.use("/api/categories", categoriesRouter);
 
 
 

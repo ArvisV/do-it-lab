@@ -1,114 +1,112 @@
+
+import { useEffect, useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
+import {
+  ArrowRight,
+  Leaf,
+  UserRound,
+} from 'lucide-react'
+
 import RegisterPage from './pages/RegisterPage'
-import './App.css'
-import Logo from './components/Logo'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import CreateProjectPage from './pages/CreateProjectPage'
 import MyProjectsPage from './pages/MyProjectsPage'
 import ProjectCatalogPage from './pages/ProjectCatalogPage'
 
-const projects = [
-  {
-    title: 'Koka plaukts istabas augiem',
-    category: 'Koks un amatniecība',
-    author: 'Anna',
-    status: 'Pabeigts',
-    statusType: 'completed',
-    image:
-      'https://images.unsplash.com/photo-1485955900006-10f4d324d411?auto=format&fit=crop&w=900&q=85',
-    likes: 24,
-  },
-  {
-    title: 'Automātiska augu laistīšana',
-    category: 'Elektronika',
-    author: 'Jānis',
-    status: 'Procesā',
-    statusType: 'progress',
-    image:
-      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=900&q=85',
-    likes: 31,
-  },
-  {
-    title: 'Mazs zaļais dārzs mājās',
-    category: 'Dārzs un daba',
-    author: 'Līga',
-    status: 'Plānots',
-    statusType: 'planned',
-    image:
-      'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=85',
-    likes: 18,
-  },
-  {
-    title: 'Roku darbs mājīgākai mājai',
-    category: 'DIY un māja',
-    author: 'Zane',
-    status: 'Pabeigts',
-    statusType: 'completed',
-    image:
-      'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=900&q=85',
-    likes: 42,
-  },
-]
+import Logo from './components/Logo'
+import './App.css'
 
+const API_URL = 'http://localhost:5000/api'
 
+type PublicProject = {
+  id: string
+  title: string
+  description: string
+  imagePath: string | null
+  createdAt: string
+  category: {
+    id: string
+    name: string
+  } | null
+  user: {
+    id: string
+    email: string
+  }
+}
 
+function getImageUrl(imagePath: string | null) {
+  if (!imagePath) return null
+
+  if (imagePath.startsWith('http')) {
+    return imagePath
+  }
+
+  return `http://localhost:5000/${imagePath.replace(/^\/+/, '')}`
+}
+
+function getAuthor(project: PublicProject) {
+  return project.user?.email?.split('@')[0] || 'Do It Lab lietotājs'
+}
 
 function ArrowIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 12H19M12 5L19 12L12 19"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
+  return <ArrowRight size={19} aria-hidden="true" />
 }
 
 function ProjectCard({
   project,
 }: {
-  project: (typeof projects)[number]
+  project: PublicProject
 }) {
+  const imageUrl = getImageUrl(project.imagePath)
+
   return (
     <article className="project-card">
-      <a
+      <div
         className="project-image-link"
-        href="#projekti"
-        aria-label={`Apskatīt projektu: ${project.title}`}
+        aria-label={`Projekts: ${project.title}`}
       >
-        <img
-          className="project-image"
-          src={project.image}
-          alt={project.title}
-          loading="lazy"
-        />
-        <span className={`status-badge ${project.statusType}`}>
-          <span className="status-dot" />
-          {project.status}
-        </span>
+        {imageUrl ? (
+          <img
+            className="project-image"
+            src={imageUrl}
+            alt={project.title}
+            loading="lazy"
+          />
+        ) : (
+          <div className="project-image-placeholder">
+            <Leaf size={38} />
+            <span>Attēls vēl nav pievienots</span>
+          </div>
+        )}
+
         <span className="image-arrow" aria-hidden="true">
           <ArrowIcon />
         </span>
-      </a>
+      </div>
 
       <div className="project-card-content">
-        <span className="project-category">{project.category}</span>
+        <span className="project-category">
+          {project.category?.name ?? 'Bez kategorijas'}
+        </span>
+
         <h3>{project.title}</h3>
+
+        <p className="public-project-description">
+          {project.description}
+        </p>
 
         <div className="project-card-footer">
           <div className="author">
             <span className="author-avatar">
-              {project.author.charAt(0)}
+              {getAuthor(project).charAt(0).toUpperCase()}
             </span>
-            <span>{project.author}</span>
+
+            <span>{getAuthor(project)}</span>
           </div>
 
-          <span className="project-likes" aria-label={`${project.likes} atzīmes`}>
-            <span aria-hidden="true">♡</span> {project.likes}
+          <span className="public-project-date">
+            {new Date(project.createdAt).toLocaleDateString('lv-LV')}
           </span>
         </div>
       </div>
@@ -117,6 +115,55 @@ function ProjectCard({
 }
 
 function HomePage() {
+  const [projects, setProjects] = useState<PublicProject[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let active = true
+
+    async function loadProjects() {
+      setLoading(true)
+      setError('')
+
+      try {
+        const response = await fetch(`${API_URL}/projects`)
+
+        if (!response.ok) {
+          throw new Error('Neizdevās ielādēt publiskos projektus.')
+        }
+
+        const data = await response.json()
+
+        if (!Array.isArray(data.projects)) {
+          throw new Error('Saņemts nederīgs projektu saraksts.')
+        }
+
+        if (active) {
+          setProjects(data.projects)
+        }
+      } catch (err) {
+        if (active) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : 'Neizdevās sazināties ar serveri.',
+          )
+        }
+      } finally {
+        if (active) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadProjects()
+
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
     <div className="site-shell" id="sakums">
       <header className="site-header">
@@ -133,6 +180,7 @@ function HomePage() {
             <a className="login-link" href="/login">
               Pieteikties
             </a>
+
             <a
               className="button button-primary header-register"
               href="/register"
@@ -168,7 +216,10 @@ function HomePage() {
                 Apskatīt projektus <ArrowIcon />
               </a>
 
-              <a className="button button-secondary" href="/register">
+              <a
+                className="button button-secondary"
+                href="/register"
+              >
                 Pievienoties kopienai
               </a>
             </div>
@@ -193,18 +244,71 @@ function HomePage() {
         <section className="projects-section" id="projekti">
           <div className="section-heading">
             <div>
-              <span className="eyebrow">Iedvesmojies un radi</span>
+              <span className="eyebrow">
+                Iedvesmojies un radi
+              </span>
+
               <h2>
                 Idejas, kas kļūst īstas<span>.</span>
               </h2>
             </div>
           </div>
 
-          <div className="project-grid">
-            {projects.map((project) => (
-              <ProjectCard project={project} key={project.title} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="public-projects-message">
+              <p>Ielādējam jaunākos projektus...</p>
+            </div>
+          ) : error ? (
+            <div className="public-projects-message" role="alert">
+              <h3>Projektus pašlaik neizdevās ielādēt</h3>
+              <p>{error}</p>
+
+              <button
+                className="button button-secondary"
+                onClick={() => window.location.reload()}
+              >
+                Mēģināt vēlreiz
+              </button>
+            </div>
+          ) : projects.length > 0 ? (
+            <div className="project-grid">
+              {projects.slice(0, 4).map((project) => (
+                <ProjectCard
+                  project={project}
+                  key={project.id}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="public-projects-message">
+              <Leaf size={38} />
+
+              <h3>Pagaidām nav publicētu projektu</h3>
+
+              <p>
+                Kad lietotāji publicēs savus projektus,
+                tie būs redzami šeit.
+              </p>
+
+              <a
+                className="button button-secondary"
+                href="/register"
+              >
+                Pievienojies Do It Lab
+              </a>
+            </div>
+          )}
+
+          {projects.length > 4 && (
+            <div className="public-projects-more">
+              <a
+                className="button button-secondary"
+                href="/projects"
+              >
+                Apskatīt visus projektus <ArrowIcon />
+              </a>
+            </div>
+          )}
         </section>
 
         <section className="about-strip" id="par-mums">
@@ -229,12 +333,13 @@ function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/projects/new" element={<CreateProjectPage />} />
       <Route path="/projects/mine" element={<MyProjectsPage />} />
       <Route path="/projects" element={<ProjectCatalogPage />} />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

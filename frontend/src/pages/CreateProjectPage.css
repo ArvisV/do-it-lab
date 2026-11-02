@@ -143,3 +143,28 @@
     text-align: center;
   }
 }
+
+
+.create-project-form select {
+  width: 100%;
+  padding: 14px 15px;
+  margin-bottom: 22px;
+  border: 1px solid #e5e2d7;
+  border-radius: 10px;
+  background-color: #f7f5ee;
+  color: #26332d;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.create-project-form select:focus {
+  border-color: #315b43;
+  box-shadow: 0 0 0 3px rgba(49, 91, 67, 0.08);
+}
+
+.create-project-form select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

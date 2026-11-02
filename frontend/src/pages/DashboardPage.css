@@ -758,3 +758,35 @@
     font-size: 10px;
   }
 }
+
+
+.dashboard-project-placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 170px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #e9efe6;
+  color: #77917d;
+}
+
+.dashboard-project-placeholder span {
+  color: #788579;
+  font-size: 12px;
+}
+
+.dashboard-project-description {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 8px 0 12px;
+  color: #727a74;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
