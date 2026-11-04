@@ -297,6 +297,12 @@ function ProjectManagementPage() {
 
   const [activeTab, setActiveTab] = useState<EditorTab>('steps')
 
+  // Projekta galerija
+  const [galleryCaption, setGalleryCaption] = useState('')
+  const [galleryCaptionDrafts, setGalleryCaptionDrafts] = useState<
+    Record<string, string>
+  >({})
+
   // Soļa pievienošana un rediģēšana
   const [stepFormOpen, setStepFormOpen] = useState(false)
   const [editingStepId, setEditingStepId] = useState<string | null>(null)
@@ -1209,6 +1215,132 @@ function ProjectManagementPage() {
 
       await refreshProject()
       showSuccess('Projekta titulbilde noņemta.')
+    } catch (err) {
+      showError(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function uploadGalleryImage(
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    if (!project) return
+
+    const file = event.currentTarget.files?.[0]
+    event.currentTarget.value = ''
+
+    if (!file) return
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      showError(new Error('Atļauti tikai JPG, PNG un WEBP attēli.'))
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showError(new Error('Attēla izmērs nedrīkst pārsniegt 5 MB.'))
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('image', file)
+    formData.append('caption', galleryCaption)
+
+    setBusy(true)
+
+    try {
+      await apiRequest(`/images/projects/${project.id}/gallery`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      setGalleryCaption('')
+      await refreshProject()
+      showSuccess('Attēls veiksmīgi pievienots galerijai.')
+    } catch (err) {
+      showError(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function saveGalleryCaption(imageId: string) {
+    const caption = galleryCaptionDrafts[imageId] ?? ''
+
+    setBusy(true)
+
+    try {
+      await apiRequest(`/images/gallery/${imageId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ caption }),
+      })
+
+      await refreshProject()
+      showSuccess('Attēla apraksts saglabāts.')
+    } catch (err) {
+      showError(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function deleteGalleryImage(image: ProjectGalleryImage) {
+    if (!window.confirm('Vai tiešām vēlies dzēst šo galerijas attēlu?')) {
+      return
+    }
+
+    setBusy(true)
+
+    try {
+      await apiRequest(`/images/gallery/${image.id}`, {
+        method: 'DELETE',
+      })
+
+      await refreshProject()
+      setGalleryCaptionDrafts((current) => {
+        const next = { ...current }
+        delete next[image.id]
+        return next
+      })
+      showSuccess('Galerijas attēls izdzēsts.')
+    } catch (err) {
+      showError(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function toggleGalleryVisibility() {
+    if (!project) return
+
+    const nextVisibility = !project.isGalleryPublic
+
+    setBusy(true)
+
+    try {
+      await apiRequest(
+        `/images/projects/${project.id}/gallery-visibility`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            isGalleryPublic: nextVisibility,
+          }),
+        },
+      )
+
+      await refreshProject()
+
+      showSuccess(
+        nextVisibility
+          ? 'Galerija tagad ir publiska.'
+          : 'Galerija tagad ir privāta.',
+      )
     } catch (err) {
       showError(err)
     } finally {
@@ -2518,25 +2650,187 @@ function ProjectManagementPage() {
                       <h2>Projekta galerija</h2>
 
                       <p>
-                        Šeit glabāsi papildu projekta attēlus, idejas
-                        un piezīmes. Galerija pēc noklusējuma ir privāta.
+                        Pievieno papildu attēlus, kas parāda projekta
+                        tapšanas procesu, detaļas un rezultātu.
                       </p>
                     </div>
                   </div>
 
-                  <div className="editor-coming-soon">
-                    <div className="editor-empty-icon">
-                      <Images size={35} />
+                  <div className="editor-gallery-visibility">
+                    <div className="editor-gallery-visibility-info">
+                      <div className="editor-gallery-visibility-icon">
+                        {project.isGalleryPublic ? (
+                          <Eye size={19} />
+                        ) : (
+                          <LockKeyhole size={19} />
+                        )}
+                      </div>
+
+                      <div>
+                        <strong>
+                          {project.isGalleryPublic
+                            ? 'Publiska galerija'
+                            : 'Privāta galerija'}
+                        </strong>
+
+                        <p>
+                          {project.isGalleryPublic
+                            ? 'Galerijas attēlus varēs apskatīt projekta apmeklētāji.'
+                            : 'Galerijas attēlus vari apskatīt tikai tu.'}
+                        </p>
+                      </div>
                     </div>
 
-                    <h3>Galerijas pārvaldība</h3>
+                    <button
+                      type="button"
+                      className="editor-secondary-button"
+                      disabled={busy}
+                      onClick={() => void toggleGalleryVisibility()}
+                    >
+                      {project.isGalleryPublic ? (
+                        <>
+                          <EyeOff size={16} />
+                          Padarīt privātu
+                        </>
+                      ) : (
+                        <>
+                          <Eye size={16} />
+                          Padarīt publisku
+                        </>
+                      )}
+                    </button>
+                  </div>
 
-                    <p>
-                      Attēlu pievienošanu, aprakstu rediģēšanu un
-                      atsevišķu galerijas redzamības pārslēgšanu
-                      pieslēgsim nākamajā izstrādes solī.
+                  <div className="editor-gallery-upload">
+                    <div className="editor-gallery-upload-heading">
+                      <div>
+                        <h3>Pievienot attēlu</h3>
+                        <p>
+                          Izvēlies attēlu un, ja vēlies, pievieno tā aprakstu.
+                        </p>
+                      </div>
+
+                      <div className="editor-gallery-upload-icon">
+                        <ImagePlus size={23} />
+                      </div>
+                    </div>
+
+                    <label className="editor-field">
+                      <span>Attēla apraksts (nav obligāts)</span>
+
+                      <textarea
+                        value={galleryCaption}
+                        onChange={(event) => setGalleryCaption(event.target.value)}
+                        placeholder="Piemēram, projekta sākotnējā ideja..."
+                        maxLength={2000}
+                        rows={3}
+                        disabled={busy}
+                      />
+                    </label>
+
+                    <label className="editor-primary-button editor-gallery-file-button">
+                      <ImagePlus size={17} />
+                      Izvēlēties un pievienot attēlu
+
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        hidden
+                        disabled={busy}
+                        onChange={(event) => void uploadGalleryImage(event)}
+                      />
+                    </label>
+
+                    <p className="editor-help-text">
+                      Atļauti JPG, PNG un WEBP attēli. Maksimālais faila izmērs – 5 MB.
                     </p>
                   </div>
+
+                  <div className="editor-gallery-list-heading">
+                    <div>
+                      <h3>Galerijas attēli</h3>
+                      <span>{project.galleryImages.length} attēli</span>
+                    </div>
+                  </div>
+
+                  {project.galleryImages.length === 0 ? (
+                    <div className="editor-gallery-empty">
+                      <div className="editor-empty-icon">
+                        <Images size={35} />
+                      </div>
+
+                      <h3>Galerija vēl ir tukša</h3>
+
+                      <p>
+                        Pievieno pirmo attēlu, lai dokumentētu sava projekta
+                        tapšanas procesu.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="editor-gallery-grid">
+                      {project.galleryImages.map((image) => (
+                        <article className="editor-gallery-card" key={image.id}>
+                          <div className="editor-gallery-image">
+                            <ProjectImage
+                              src={`${API_URL}/images/gallery/${image.id}`}
+                              alt={image.caption || project.title}
+                              className="editor-gallery-photo"
+                            />
+                          </div>
+
+                          <div className="editor-gallery-card-content">
+                            <label className="editor-field">
+                              <span>Attēla apraksts</span>
+
+                              <textarea
+                                value={
+                                  galleryCaptionDrafts[image.id] ??
+                                  image.caption ??
+                                  ''
+                                }
+                                onChange={(event) =>
+                                  setGalleryCaptionDrafts((current) => ({
+                                    ...current,
+                                    [image.id]: event.target.value,
+                                  }))
+                                }
+                                maxLength={2000}
+                                rows={3}
+                                disabled={busy}
+                                placeholder="Pievieno attēla aprakstu..."
+                              />
+                            </label>
+
+                            <div className="editor-gallery-actions">
+                              {(galleryCaptionDrafts[image.id] ??
+                                image.caption ??
+                                '') !== (image.caption ?? '') && (
+                                <button
+                                  type="button"
+                                  className="editor-small-button"
+                                  disabled={busy}
+                                  onClick={() => void saveGalleryCaption(image.id)}
+                                >
+                                  <Save size={15} />
+                                  Saglabāt
+                                </button>
+                              )}
+
+                              <button
+                                type="button"
+                                className="editor-small-button danger"
+                                disabled={busy}
+                                onClick={() => void deleteGalleryImage(image)}
+                              >
+                                <Trash2 size={15} />
+                                Dzēst
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
                 </section>
               )}
             </div>
