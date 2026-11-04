@@ -742,3 +742,10 @@
   justify-content: center;
   margin-top: 30px;
 }
+
+.project-image-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}

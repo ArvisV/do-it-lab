@@ -19,7 +19,8 @@ model User {
 
   emailVerifications EmailVerification[]
   sessions           Session[]
-  projects            Project[]
+  projects           Project[]
+  favorites          Favorite[]
 }
 
 model EmailVerification {
@@ -49,20 +50,25 @@ model Session {
 }
 
 model Project {
-  id          String   @id @default(uuid())
-  title       String
-  description String   @db.Text
-  imagePath   String?
-  isPublished Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(uuid())
+  title           String
+  description     String   @db.Text
+  imagePath       String?
+  isPublished     Boolean  @default(false)
+  completedAt     DateTime?
+  isGalleryPublic Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   userId     String
   categoryId String?
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  steps    ProjectStep[]
+  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category      Category?             @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  steps         ProjectStep[]
+  materials     ProjectMaterial[]
+  galleryImages ProjectGalleryImage[]
+  favorites     Favorite[]
 
   @@index([userId, createdAt])
   @@index([categoryId])
@@ -81,14 +87,78 @@ model ProjectStep {
   id          String   @id @default(uuid())
   title       String
   description String   @db.Text
-  materials   String?  @db.Text
+  imagePath   String?
   stepNumber  Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  materialsUsed StepMaterial[]
 
   @@unique([projectId, stepNumber])
   @@index([projectId, stepNumber])
+}
+
+model ProjectMaterial {
+  id                String   @id @default(uuid())
+  name              String
+  unit              String   @default("gab.")
+  quantityAvailable Decimal  @default(0) @db.Decimal(10, 2)
+  notes             String?  @db.Text
+  sortOrder         Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  projectId     String
+  project       Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  stepMaterials StepMaterial[]
+
+  @@index([projectId, sortOrder])
+}
+
+model StepMaterial {
+  id             String   @id @default(uuid())
+  quantityNeeded Decimal  @db.Decimal(10, 2)
+  quantityUsed   Decimal  @default(0) @db.Decimal(10, 2)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  stepId     String
+  materialId String
+
+  step     ProjectStep     @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  material ProjectMaterial @relation(fields: [materialId], references: [id], onDelete: Cascade)
+
+  @@unique([stepId, materialId])
+  @@index([stepId])
+  @@index([materialId])
+}
+
+model ProjectGalleryImage {
+  id        String   @id @default(uuid())
+  imagePath String
+  caption   String?  @db.Text
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, sortOrder])
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  projectId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@index([userId, createdAt])
+  @@index([projectId])
 }

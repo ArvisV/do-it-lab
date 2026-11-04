@@ -315,11 +315,7 @@ export default function DashboardPage() {
 
           <button
             className="dashboard-nav-link"
-            onClick={() =>
-              setNotice(
-                'Saglabāto projektu sadaļu pievienosim nākamajā izstrādes solī.',
-              )
-            }
+            onClick={() => navigate('/projects/saved')}
           >
             <Heart className="nav-icon" />
             <span>Saglabātie</span>

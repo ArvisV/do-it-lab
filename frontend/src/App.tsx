@@ -1,10 +1,16 @@
 
-import { useEffect, useState } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, useState, type ReactNode } from 'react'
+import {
+  Routes,
+  Route,
+  Navigate,
+  Link,
+  useLocation,
+} from 'react-router-dom'
+
 import {
   ArrowRight,
   Leaf,
-  UserRound,
 } from 'lucide-react'
 
 import RegisterPage from './pages/RegisterPage'
@@ -13,6 +19,9 @@ import DashboardPage from './pages/DashboardPage'
 import CreateProjectPage from './pages/CreateProjectPage'
 import MyProjectsPage from './pages/MyProjectsPage'
 import ProjectCatalogPage from './pages/ProjectCatalogPage'
+import ProjectDetailsPage from './pages/ProjectDetailsPage'
+import SavedProjectsPage from './pages/SavedProjectsPage'
+import ProjectManagementPage from './pages/ProjectManagementPage'
 
 import Logo from './components/Logo'
 import './App.css'
@@ -35,43 +44,161 @@ type PublicProject = {
   }
 }
 
-function getImageUrl(imagePath: string | null) {
-  if (!imagePath) return null
+// =====================================================
+// AIZSARGĀTIE MARŠRUTI
+// =====================================================
 
-  if (imagePath.startsWith('http')) {
-    return imagePath
+function ProtectedRoute({ children }: { children: ReactNode }) {
+  const location = useLocation()
+
+  const [status, setStatus] = useState<
+    'checking' | 'authenticated' | 'unauthenticated' | 'error'
+  >('checking')
+
+  const [retryKey, setRetryKey] = useState(0)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    let active = true
+
+    async function checkSession() {
+      setStatus('checking')
+
+      try {
+        const response = await fetch(`${API_URL}/auth/me`, {
+          method: 'GET',
+          credentials: 'include',
+          signal: controller.signal,
+        })
+
+        if (response.status === 401) {
+          if (active) {
+            setStatus('unauthenticated')
+          }
+          return
+        }
+
+        const data = await response.json()
+
+        if (!response.ok || !data.user) {
+          throw new Error(
+            data.message || 'Neizdevās pārbaudīt lietotāja sesiju.',
+          )
+        }
+
+        if (active) {
+          setStatus('authenticated')
+        }
+      } catch {
+        if (active && !controller.signal.aborted) {
+          setStatus('error')
+        }
+      }
+    }
+
+    void checkSession()
+
+    return () => {
+      active = false
+      controller.abort()
+    }
+  }, [retryKey])
+
+  if (status === 'checking') {
+    return (
+      <div className="public-projects-message">
+        <p>Pārbaudām lietotāja piekļuvi...</p>
+      </div>
+    )
   }
 
-  return `http://localhost:5000/${imagePath.replace(/^\/+/, '')}`
+  if (status === 'unauthenticated') {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{
+          from: location.pathname + location.search,
+        }}
+      />
+    )
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="public-projects-message">
+        <h3>Neizdevās pārbaudīt lietotāja sesiju</h3>
+
+        <p>
+          Pārbaudi, vai backend serveris darbojas, un mēģini vēlreiz.
+        </p>
+
+        <button
+          className="button button-secondary"
+          type="button"
+          onClick={() => setRetryKey((current) => current + 1)}
+        >
+          Mēģināt vēlreiz
+        </button>
+
+        <Link to="/" className="login-link">
+          Atgriezties sākumlapā
+        </Link>
+      </div>
+    )
+  }
+
+  return <>{children}</>
 }
+
+// =====================================================
+// PROJEKTA ATTĒLA ADRESE
+// =====================================================
+
+function getProjectCoverUrl(project: PublicProject) {
+  if (!project.imagePath) return null
+
+  return `${API_URL}/images/projects/${encodeURIComponent(project.id)}/cover`
+}
+
+// =====================================================
+// AUTORA NOSAUKUMS
+// =====================================================
 
 function getAuthor(project: PublicProject) {
   return project.user?.email?.split('@')[0] || 'Do It Lab lietotājs'
 }
 
+// =====================================================
+// BULTIŅAS IKONA
+// =====================================================
+
 function ArrowIcon() {
   return <ArrowRight size={19} aria-hidden="true" />
 }
 
-function ProjectCard({
-  project,
-}: {
-  project: PublicProject
-}) {
-  const imageUrl = getImageUrl(project.imagePath)
+// =====================================================
+// PUBLISKĀ PROJEKTA KARTĪTE
+// =====================================================
+
+function ProjectCard({ project }: { project: PublicProject }) {
+  const imageUrl = getProjectCoverUrl(project)
+  const [imageError, setImageError] = useState(false)
 
   return (
     <article className="project-card">
-      <div
+      <Link
+        to={`/projects/${project.id}`}
         className="project-image-link"
-        aria-label={`Projekts: ${project.title}`}
+        aria-label={`Apskatīt projektu: ${project.title}`}
       >
-        {imageUrl ? (
+        {imageUrl && !imageError ? (
           <img
             className="project-image"
             src={imageUrl}
             alt={project.title}
             loading="lazy"
+            onError={() => setImageError(true)}
           />
         ) : (
           <div className="project-image-placeholder">
@@ -83,7 +210,7 @@ function ProjectCard({
         <span className="image-arrow" aria-hidden="true">
           <ArrowIcon />
         </span>
-      </div>
+      </Link>
 
       <div className="project-card-content">
         <span className="project-category">
@@ -114,12 +241,17 @@ function ProjectCard({
   )
 }
 
+// =====================================================
+// PUBLISKĀ SĀKUMLAPA
+// =====================================================
+
 function HomePage() {
   const [projects, setProjects] = useState<PublicProject[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
+    const controller = new AbortController()
     let active = true
 
     async function loadProjects() {
@@ -127,7 +259,9 @@ function HomePage() {
       setError('')
 
       try {
-        const response = await fetch(`${API_URL}/projects`)
+        const response = await fetch(`${API_URL}/projects`, {
+          signal: controller.signal,
+        })
 
         if (!response.ok) {
           throw new Error('Neizdevās ielādēt publiskos projektus.')
@@ -143,6 +277,10 @@ function HomePage() {
           setProjects(data.projects)
         }
       } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          return
+        }
+
         if (active) {
           setError(
             err instanceof Error
@@ -161,11 +299,24 @@ function HomePage() {
 
     return () => {
       active = false
+      controller.abort()
     }
   }, [])
 
+  // Sakārtojam projektus pēc jaunākā datuma.
+  // Sākumlapā parādām tikai trīs jaunākos.
+  const latestProjects = [...projects]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() -
+        new Date(a.createdAt).getTime(),
+    )
+    .slice(0, 3)
+
   return (
     <div className="site-shell" id="sakums">
+      {/* GALVENE */}
+
       <header className="site-header">
         <div className="header-inner">
           <Logo />
@@ -177,21 +328,23 @@ function HomePage() {
           </nav>
 
           <div className="header-actions">
-            <a className="login-link" href="/login">
+            <Link className="login-link" to="/login">
               Pieteikties
-            </a>
+            </Link>
 
-            <a
+            <Link
               className="button button-primary header-register"
-              href="/register"
+              to="/register"
             >
               Reģistrēties <ArrowIcon />
-            </a>
+            </Link>
           </div>
         </div>
       </header>
 
       <main>
+        {/* GALVENAIS SĀKUMLAPAS BLOKS */}
+
         <section className="hero-section">
           <div className="hero-copy">
             <span className="eyebrow">
@@ -216,12 +369,12 @@ function HomePage() {
                 Apskatīt projektus <ArrowIcon />
               </a>
 
-              <a
+              <Link
                 className="button button-secondary"
-                href="/register"
+                to="/register"
               >
                 Pievienoties kopienai
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -229,7 +382,7 @@ function HomePage() {
             <div className="hero-photo-frame">
               <img
                 src="https://www.marapon.com/cdn/shop/articles/diy_3a8f7fae-5c6c-48e1-bd47-5abd6298a295.png?v=1772627057&width=1500"
-                alt="Radoša darba vieta ar augiem un galda lampu"
+                alt="Radoša darba vieta ar hobiju piederumiem"
                 className="hero-photo"
               />
             </div>
@@ -240,6 +393,8 @@ function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* JAUNĀKIE PUBLISKIE PROJEKTI */}
 
         <section className="projects-section" id="projekti">
           <div className="section-heading">
@@ -265,14 +420,15 @@ function HomePage() {
 
               <button
                 className="button button-secondary"
+                type="button"
                 onClick={() => window.location.reload()}
               >
                 Mēģināt vēlreiz
               </button>
             </div>
-          ) : projects.length > 0 ? (
+          ) : latestProjects.length > 0 ? (
             <div className="project-grid">
-              {projects.slice(0, 4).map((project) => (
+              {latestProjects.map((project) => (
                 <ProjectCard
                   project={project}
                   key={project.id}
@@ -290,26 +446,28 @@ function HomePage() {
                 tie būs redzami šeit.
               </p>
 
-              <a
+              <Link
                 className="button button-secondary"
-                href="/register"
+                to="/register"
               >
                 Pievienojies Do It Lab
-              </a>
+              </Link>
             </div>
           )}
 
-          {projects.length > 4 && (
+          {!loading && !error && projects.length > 3 && (
             <div className="public-projects-more">
-              <a
+              <Link
                 className="button button-secondary"
-                href="/projects"
+                to="/projects"
               >
                 Apskatīt visus projektus <ArrowIcon />
-              </a>
+              </Link>
             </div>
           )}
         </section>
+
+        {/* PAR MUMS */}
 
         <section className="about-strip" id="par-mums">
           <p>
@@ -318,6 +476,8 @@ function HomePage() {
           </p>
         </section>
       </main>
+
+      {/* KĀJENE */}
 
       <footer className="site-footer">
         <Logo />
@@ -328,16 +488,69 @@ function HomePage() {
   )
 }
 
+// =====================================================
+// LIETOTNES MARŠRUTI
+// =====================================================
+
 function App() {
   return (
     <Routes>
+      {/* Publiskās lapas */}
+
       <Route path="/" element={<HomePage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/projects/new" element={<CreateProjectPage />} />
-      <Route path="/projects/mine" element={<MyProjectsPage />} />
       <Route path="/projects" element={<ProjectCatalogPage />} />
+      <Route path="/projects/:id" element={<ProjectDetailsPage />} />
+
+      {/* Tikai pieslēgtiem lietotājiem */}
+
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/projects/new"
+        element={
+          <ProtectedRoute>
+            <CreateProjectPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/projects/mine"
+        element={
+          <ProtectedRoute>
+            <MyProjectsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/projects/saved"
+        element={
+          <ProtectedRoute>
+            <SavedProjectsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/projects/:id/manage"
+        element={
+          <ProtectedRoute>
+            <ProjectManagementPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Nezināmi maršruti */}
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

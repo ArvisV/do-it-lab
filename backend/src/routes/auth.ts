@@ -1,14 +1,24 @@
-
 import "dotenv/config";
+
 import { Router } from "express";
 import argon2 from "argon2";
-import { createHmac, randomBytes, randomInt } from "node:crypto";
+import {
+  createHmac,
+  randomBytes,
+  randomInt,
+  timingSafeEqual,
+} from "node:crypto";
+import { rateLimit } from "express-rate-limit";
+
 import { prisma } from "../db.js";
 import { sendVerificationEmail } from "../services/email.js";
 
 const router = Router();
 
-// E-pasta apstiprināšanas noslēpums
+// =====================================================
+// DROŠĪBAS NOSLĒPUMI
+// =====================================================
+
 const verificationSecret = process.env.EMAIL_VERIFICATION_SECRET;
 
 if (!verificationSecret) {
@@ -17,7 +27,6 @@ if (!verificationSecret) {
 
 const verificationSecretKey: string = verificationSecret;
 
-// Sesiju noslēpums
 const sessionSecret = process.env.SESSION_SECRET;
 
 if (!sessionSecret) {
@@ -26,21 +35,90 @@ if (!sessionSecret) {
 
 const sessionSecretKey: string = sessionSecret;
 
-// Apstiprināšanas koda jaucējvērtība
+// =====================================================
+// RATE LIMITING
+// =====================================================
+
+// Reģistrācija: maksimums 5 pieprasījumi stundā no vienas IP.
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message:
+      "Pārsniegts reģistrācijas pieprasījumu limits. Mēģini vēlāk.",
+  },
+});
+
+// Pieslēgšanās: maksimums 10 pieprasījumi 15 minūtēs.
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message:
+      "Pārāk daudz pieslēgšanās mēģinājumu. Mēģini vēlreiz pēc 15 minūtēm.",
+  },
+});
+
+// E-pasta apstiprināšana: maksimums 10 pieprasījumi 15 minūtēs.
+const verificationLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message:
+      "Pārāk daudz apstiprināšanas mēģinājumu. Mēģini vēlāk.",
+  },
+});
+
+// =====================================================
+// HASH FUNKCIJAS
+// =====================================================
+
+// Apstiprināšanas koda jaucējvērtība.
 function hashVerificationCode(code: string): string {
   return createHmac("sha256", verificationSecretKey)
     .update(code)
     .digest("hex");
 }
 
-// Sesijas tokena jaucējvērtība
+// Sesijas tokena jaucējvērtība.
 function hashSessionToken(token: string): string {
   return createHmac("sha256", sessionSecretKey)
     .update(token)
     .digest("hex");
 }
 
-// Kopīga e-pasta adreses normalizēšana un pārbaude
+// Droša hash vērtību salīdzināšana.
+function safeHashCompare(
+  firstHash: string,
+  secondHash: string,
+): boolean {
+  if (
+    !/^[a-f0-9]{64}$/i.test(firstHash) ||
+    !/^[a-f0-9]{64}$/i.test(secondHash)
+  ) {
+    return false;
+  }
+
+  const firstBuffer = Buffer.from(firstHash, "hex");
+  const secondBuffer = Buffer.from(secondHash, "hex");
+
+  if (firstBuffer.length !== secondBuffer.length) {
+    return false;
+  }
+
+  return timingSafeEqual(firstBuffer, secondBuffer);
+}
+
+// =====================================================
+// E-PASTA VALIDĀCIJA
+// =====================================================
+
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
@@ -52,8 +130,12 @@ function isValidEmail(email: string): boolean {
   );
 }
 
-// Sesijas iestatījumi
+// =====================================================
+// SESIJAS IESTATĪJUMI
+// =====================================================
+
 const sessionCookieName = "dil_session";
+
 const sessionLifetimeMs = 7 * 24 * 60 * 60 * 1000;
 
 const sessionCookieOptions = {
@@ -68,7 +150,7 @@ const sessionCookieOptions = {
 // POST /api/auth/register
 // =====================================================
 
-router.post("/register", async (req, res) => {
+router.post("/register", registerLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -120,7 +202,9 @@ router.post("/register", async (req, res) => {
     });
 
     const code = randomInt(100000, 1000000).toString();
+
     const tokenHash = hashVerificationCode(code);
+
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     const user = await prisma.user.create({
@@ -154,6 +238,20 @@ router.post("/register", async (req, res) => {
   } catch (error) {
     console.error("Reģistrācijas kļūda:", error);
 
+    // Vienlaicīgas reģistrācijas gadījumā var rasties unikālā
+    // e-pasta ierobežojuma konflikts.
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      error.code === "P2002"
+    ) {
+      res.status(409).json({
+        message: "Lietotājs ar šo e-pasta adresi jau eksistē.",
+      });
+      return;
+    }
+
     res.status(500).json({
       message: "Reģistrāciju pašlaik neizdevās pabeigt.",
     });
@@ -165,157 +263,159 @@ router.post("/register", async (req, res) => {
 // POST /api/auth/verify-email
 // =====================================================
 
-router.post("/verify-email", async (req, res) => {
-  try {
-    const { email, code } = req.body;
+router.post(
+  "/verify-email",
+  verificationLimiter,
+  async (req, res) => {
+    try {
+      const { email, code } = req.body;
 
-    if (
-      typeof email !== "string" ||
-      typeof code !== "string" ||
-      !email.trim() ||
-      !/^\d{6}$/.test(code)
-    ) {
-      res.status(400).json({
-        message:
-          "Norādi derīgu e-pasta adresi un sešu ciparu apstiprināšanas kodu.",
-      });
-      return;
-    }
-
-    const normalizedEmail = normalizeEmail(email);
-
-    if (!isValidEmail(normalizedEmail)) {
-      res.status(400).json({
-        message: "E-pasta adrese nav derīga.",
-      });
-      return;
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: normalizedEmail },
-    });
-
-    if (!user) {
-      res.status(400).json({
-        message: "E-pasts vai apstiprināšanas kods nav derīgs.",
-      });
-      return;
-    }
-
-    if (user.emailVerifiedAt) {
-      res.status(409).json({
-        message: "E-pasts jau ir apstiprināts.",
-      });
-      return;
-    }
-
-    const verification = await prisma.emailVerification.findFirst({
-      where: { userId: user.id },
-      orderBy: { createdAt: "desc" },
-    });
-
-    if (!verification || verification.usedAt) {
-      res.status(400).json({
-        message:
-          "Apstiprināšanas kods nav derīgs. Pieprasi jaunu kodu.",
-      });
-      return;
-    }
-
-    if (verification.expiresAt <= new Date()) {
-      res.status(400).json({
-        message:
-          "Apstiprināšanas koda derīguma termiņš ir beidzies.",
-      });
-      return;
-    }
-
-    if (verification.attempts >= 5) {
-      res.status(429).json({
-        message:
-          "Pārsniegts mēģinājumu skaits. Pieprasi jaunu kodu.",
-      });
-      return;
-    }
-
-    const submittedHash = hashVerificationCode(code);
-
-    if (submittedHash !== verification.tokenHash) {
-      // Palielinām nepareizo mēģinājumu skaitu tikai tad,
-      // ja kods vēl nav izmantots un mēģinājumu limits nav sasniegts.
-      await prisma.emailVerification.updateMany({
-        where: {
-          id: verification.id,
-          usedAt: null,
-          expiresAt: { gt: new Date() },
-          attempts: { lt: 5 },
-        },
-        data: {
-          attempts: { increment: 1 },
-        },
-      });
-
-      res.status(400).json({
-        message: "Apstiprināšanas kods nav pareizs.",
-      });
-      return;
-    }
-
-    // Koda izmantošanu un e-pasta apstiprināšanu
-    // veicam vienā datubāzes transakcijā.
-    const now = new Date();
-
-    const result = await prisma.$transaction(async (tx) => {
-      const updated = await tx.emailVerification.updateMany({
-        where: {
-          id: verification.id,
-          usedAt: null,
-          expiresAt: { gt: now },
-          attempts: { lt: 5 },
-        },
-        data: {
-          usedAt: now,
-        },
-      });
-
-      if (updated.count !== 1) {
-        return false;
+      if (
+        typeof email !== "string" ||
+        typeof code !== "string" ||
+        !email.trim() ||
+        !/^\d{6}$/.test(code)
+      ) {
+        res.status(400).json({
+          message:
+            "Norādi derīgu e-pasta adresi un sešu ciparu apstiprināšanas kodu.",
+        });
+        return;
       }
 
-      await tx.user.update({
-        where: { id: user.id },
-        data: { emailVerifiedAt: now },
+      const normalizedEmail = normalizeEmail(email);
+
+      if (!isValidEmail(normalizedEmail)) {
+        res.status(400).json({
+          message: "E-pasta adrese nav derīga.",
+        });
+        return;
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { email: normalizedEmail },
       });
 
-      return true;
-    });
+      if (!user) {
+        res.status(400).json({
+          message: "E-pasts vai apstiprināšanas kods nav derīgs.",
+        });
+        return;
+      }
 
-    if (!result) {
-      res.status(400).json({
-        message: "Kods vairs nav derīgs. Pieprasi jaunu kodu.",
+      if (user.emailVerifiedAt) {
+        res.status(409).json({
+          message: "E-pasts jau ir apstiprināts.",
+        });
+        return;
+      }
+
+      const verification = await prisma.emailVerification.findFirst({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
       });
-      return;
+
+      if (!verification || verification.usedAt) {
+        res.status(400).json({
+          message:
+            "Apstiprināšanas kods nav derīgs. Pieprasi jaunu kodu.",
+        });
+        return;
+      }
+
+      if (verification.expiresAt <= new Date()) {
+        res.status(400).json({
+          message:
+            "Apstiprināšanas koda derīguma termiņš ir beidzies.",
+        });
+        return;
+      }
+
+      if (verification.attempts >= 5) {
+        res.status(429).json({
+          message:
+            "Pārsniegts mēģinājumu skaits. Pieprasi jaunu kodu.",
+        });
+        return;
+      }
+
+      const submittedHash = hashVerificationCode(code);
+
+      if (!safeHashCompare(submittedHash, verification.tokenHash)) {
+        await prisma.emailVerification.updateMany({
+          where: {
+            id: verification.id,
+            usedAt: null,
+            expiresAt: { gt: new Date() },
+            attempts: { lt: 5 },
+          },
+          data: {
+            attempts: { increment: 1 },
+          },
+        });
+
+        res.status(400).json({
+          message: "Apstiprināšanas kods nav pareizs.",
+        });
+        return;
+      }
+
+      // Koda izmantošanu un e-pasta apstiprināšanu
+      // veicam vienā datubāzes transakcijā.
+      const now = new Date();
+
+      const result = await prisma.$transaction(async (tx) => {
+        const updated = await tx.emailVerification.updateMany({
+          where: {
+            id: verification.id,
+            usedAt: null,
+            expiresAt: { gt: now },
+            attempts: { lt: 5 },
+          },
+          data: {
+            usedAt: now,
+          },
+        });
+
+        if (updated.count !== 1) {
+          return false;
+        }
+
+        await tx.user.update({
+          where: { id: user.id },
+          data: { emailVerifiedAt: now },
+        });
+
+        return true;
+      });
+
+      if (!result) {
+        res.status(400).json({
+          message: "Kods vairs nav derīgs. Pieprasi jaunu kodu.",
+        });
+        return;
+      }
+
+      res.json({
+        message: "E-pasta adrese veiksmīgi apstiprināta!",
+      });
+    } catch (error) {
+      console.error("E-pasta apstiprināšanas kļūda:", error);
+
+      res.status(500).json({
+        message:
+          "E-pasta apstiprināšanu pašlaik neizdevās pabeigt.",
+      });
     }
-
-    res.json({
-      message: "E-pasta adrese veiksmīgi apstiprināta!",
-    });
-  } catch (error) {
-    console.error("E-pasta apstiprināšanas kļūda:", error);
-
-    res.status(500).json({
-      message:
-        "E-pasta apstiprināšanu pašlaik neizdevās pabeigt.",
-    });
-  }
-});
+  },
+);
 
 // =====================================================
 // PIETEIKŠANĀS
 // POST /api/auth/login
 // =====================================================
 
-router.post("/login", async (req, res) => {
+router.post("/login", loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -334,7 +434,7 @@ router.post("/login", async (req, res) => {
     const normalizedEmail = normalizeEmail(email);
 
     if (!isValidEmail(normalizedEmail)) {
-      res.status(400).json({
+      res.status(401).json({
         message: "E-pasts vai parole nav pareiza.",
       });
       return;
@@ -353,7 +453,7 @@ router.post("/login", async (req, res) => {
 
     const passwordIsValid = await argon2.verify(
       user.passwordHash,
-      password
+      password,
     );
 
     if (!passwordIsValid) {
@@ -371,7 +471,9 @@ router.post("/login", async (req, res) => {
     }
 
     const sessionToken = randomBytes(32).toString("hex");
+
     const tokenHash = hashSessionToken(sessionToken);
+
     const expiresAt = new Date(Date.now() + sessionLifetimeMs);
 
     await prisma.session.create({
@@ -423,8 +525,15 @@ router.get("/me", async (req, res) => {
       where: {
         tokenHash: hashSessionToken(token),
       },
-      include: {
-        user: true,
+      select: {
+        id: true,
+        expiresAt: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -436,6 +545,7 @@ router.get("/me", async (req, res) => {
       }
 
       res.clearCookie(sessionCookieName, sessionCookieOptions);
+
       res.status(401).json({
         message: "Sesija nav derīga.",
       });

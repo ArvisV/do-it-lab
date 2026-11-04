@@ -1,0 +1,135 @@
+.saved-page-heading {
+  margin-bottom: 34px;
+}
+
+.saved-page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.saved-page-title-row h1 {
+  margin: 0;
+  color: #293e32;
+  font-family: 'Manrope', sans-serif;
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+.saved-page-title-row p {
+  max-width: 610px;
+  margin: 10px 0 0;
+  color: #758176;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.saved-page-count {
+  min-width: 64px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 16px;
+  border: 1px solid #e3eadd;
+  border-radius: 15px;
+  background: #edf3e9;
+  color: #48734e;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.saved-page-results-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 35px 0 20px;
+}
+
+.saved-page-results-heading h2 {
+  margin: 7px 0 0;
+  color: #304438;
+  font-family: 'Manrope', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.saved-project-image-link {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.saved-project-image-link img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.saved-project-image-link .catalog-image-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+.saved-project-view-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.saved-page-empty {
+  margin-top: 20px;
+  padding: 55px 25px;
+}
+
+.saved-page-empty > svg {
+  color: #739273;
+}
+
+.saved-page-auth-actions {
+  width: min(100%, 330px);
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin: 22px auto 0;
+}
+
+.saved-page-auth-actions button {
+  width: 100%;
+}
+
+.saved-page-auth-actions .catalog-reset-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .saved-page-title-row {
+    align-items: flex-start;
+  }
+
+  .saved-page-title-row h1 {
+    font-size: 26px;
+  }
+
+  .saved-page-count {
+    min-width: 54px;
+    height: 48px;
+    padding: 0 12px;
+  }
+
+  .saved-page-results-heading h2 {
+    font-size: 19px;
+  }
+}

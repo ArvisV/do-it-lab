@@ -10,14 +10,14 @@ import {
   Heart,
   UserRound,
   Leaf,
-  Sprout,
   Cpu,
   Palette,
   Hammer,
-  SlidersHorizontal,
   CalendarDays,
   Search,
   X,
+  Sprout,
+  Folder,
 } from 'lucide-react'
 import './ProjectCatalogPage.css'
 
@@ -43,13 +43,26 @@ type Project = {
   }
 }
 
+type AuthUser = {
+  id: string
+  email: string
+}
+
+type Favorite = {
+  projectId: string
+  project?: {
+    id: string
+  }
+}
+
 const categories = [
   { name: 'Visi projekti', icon: FolderSearch },
   { name: 'Koks un amatniecība', icon: Hammer },
   { name: 'DIY un māja', icon: House },
-  { name: 'Dārzs un daba', icon: Leaf },
+  { name: 'Dārzs un daba', icon: Sprout },
   { name: 'Elektronika', icon: Cpu },
   { name: 'Radošie darbi', icon: Palette },
+  { name: 'Citi projekti', icon: Folder },
 ]
 
 function getAuthor(project: Project) {
@@ -62,11 +75,35 @@ function getAuthor(project: Project) {
   )
 }
 
-function getImageUrl(imagePath?: string | null) {
-  if (!imagePath) return null
-  if (imagePath.startsWith('http')) return imagePath
+// Veidojam attēla adresi caur jauno attēlu API.
+function getProjectCoverUrl(project: Project) {
+  if (!project.imagePath) return null
 
-  return `http://localhost:5000/${imagePath.replace(/^\/+/, '')}`
+  return `${API_URL}/images/projects/${encodeURIComponent(project.id)}/cover`
+}
+
+// Atsevišķs komponents katra projekta titulattēlam.
+function CatalogProjectImage({ project }: { project: Project }) {
+  const [failed, setFailed] = useState(false)
+
+  const imageUrl = getProjectCoverUrl(project)
+
+  if (!imageUrl || failed) {
+    return (
+      <div className="catalog-image-placeholder">
+        <Leaf size={36} />
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt={project.title}
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  )
 }
 
 export default function ProjectCatalogPage() {
@@ -75,50 +112,157 @@ export default function ProjectCatalogPage() {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('Visi projekti')
-  const [favorites, setFavorites] = useState<string[]>([])
-  const [notice, setNotice] = useState('')
 
+  // Favorīti no datubāzes.
+  const [favorites, setFavorites] = useState<string[]>([])
+  const [authUser, setAuthUser] = useState<AuthUser | null>(null)
+  const [authChecking, setAuthChecking] = useState(true)
+  const [savingFavoriteIds, setSavingFavoriteIds] = useState<string[]>([])
+
+  const [notice, setNotice] = useState('')
+  const [noticeIsError, setNoticeIsError] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+
+  // Ielādējam publiskos projektus.
   useEffect(() => {
-    let active = true
+    const controller = new AbortController()
 
     async function loadProjects() {
       setLoading(true)
       setError('')
 
       try {
-        const response = await fetch(`${API_URL}/projects`)
-
-        if (!response.ok) {
-          throw new Error('Neizdevās ielādēt publiskos projektus.')
-        }
+        const response = await fetch(`${API_URL}/projects`, {
+          signal: controller.signal,
+        })
 
         const data = await response.json()
 
-        if (active) {
-          setProjects(data.projects ?? [])
-        }
-      } catch (err) {
-        if (active) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : 'Radās neparedzēta kļūda.',
+        if (!response.ok) {
+          throw new Error(
+            data.message || 'Neizdevās ielādēt publiskos projektus.',
           )
         }
+
+        if (!Array.isArray(data.projects)) {
+          throw new Error('Saņemts nederīgs projektu saraksts.')
+        }
+
+        setProjects(data.projects)
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          return
+        }
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Radās neparedzēta kļūda.',
+        )
       } finally {
-        if (active) setLoading(false)
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
       }
     }
 
     void loadProjects()
 
-    return () => {
-      active = false
-    }
+    return () => controller.abort()
   }, [])
 
+  // Pārbaudām lietotāja sesiju un ielādējam viņa favorītus.
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadUserAndFavorites() {
+      setAuthChecking(true)
+
+      try {
+        const authResponse = await fetch(`${API_URL}/auth/me`, {
+          credentials: 'include',
+          signal: controller.signal,
+        })
+
+        // Apmeklētājs nav ielogojies.
+        if (authResponse.status === 401) {
+          setAuthUser(null)
+          setFavorites([])
+          return
+        }
+
+        const authData = await authResponse.json()
+
+        if (!authResponse.ok || !authData.user) {
+          throw new Error(
+            authData.message || 'Neizdevās pārbaudīt lietotāja sesiju.',
+          )
+        }
+
+        setAuthUser(authData.user)
+
+        // Ielādējam konkrētā lietotāja favorītus.
+        const favoritesResponse = await fetch(`${API_URL}/favorites`, {
+          credentials: 'include',
+          signal: controller.signal,
+        })
+
+        if (favoritesResponse.status === 401) {
+          setAuthUser(null)
+          setFavorites([])
+          return
+        }
+
+        const favoritesData = await favoritesResponse.json()
+
+        if (!favoritesResponse.ok) {
+          throw new Error(
+            favoritesData.message || 'Neizdevās ielādēt favorītus.',
+          )
+        }
+
+        const favoriteItems: Favorite[] = Array.isArray(
+          favoritesData.favorites,
+        )
+          ? favoritesData.favorites
+          : []
+
+        const favoriteIds = favoriteItems
+          .map((favorite) => {
+            return favorite.projectId || favorite.project?.id
+          })
+          .filter((projectId): projectId is string => {
+            return typeof projectId === 'string'
+          })
+
+        setFavorites(favoriteIds)
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          return
+        }
+
+        setNotice(
+          err instanceof Error
+            ? err.message
+            : 'Neizdevās ielādēt lietotāja favorītus.',
+        )
+        setNoticeIsError(true)
+      } finally {
+        if (!controller.signal.aborted) {
+          setAuthChecking(false)
+        }
+      }
+    }
+
+    void loadUserAndFavorites()
+
+    return () => controller.abort()
+  }, [])
+
+  // Projektu meklēšana un filtrēšana pēc kategorijas.
   const filteredProjects = useMemo(() => {
     const query = search.trim().toLowerCase()
 
@@ -140,22 +284,107 @@ export default function ProjectCatalogPage() {
     })
   }, [projects, search, activeCategory])
 
-  function toggleFavorite(projectId: string) {
-    setFavorites((current) =>
-      current.includes(projectId)
-        ? current.filter((id) => id !== projectId)
-        : [...current, projectId],
-    )
+  // Pievienojam vai noņemam projektu no datubāzes favorītiem.
+  async function toggleFavorite(projectId: string) {
+    if (savingFavoriteIds.includes(projectId)) {
+      return
+    }
 
-    setNotice(
-      favorites.includes(projectId)
-        ? 'Projekts noņemts no pagaidu favorītu atzīmēm.'
-        : 'Projekts atzīmēts kā favorīts. Šī atzīme vēl netiek saglabāta datubāzē.',
-    )
+    setNotice('')
+    setNoticeIsError(false)
+
+    // Viesim parādām reģistrācijas/pieteikšanās logu.
+    if (!authUser) {
+      if (authChecking) {
+        setNotice('Pārbaudām lietotāja sesiju. Mēģini vēlreiz.')
+        return
+      }
+
+      setShowAuthModal(true)
+      return
+    }
+
+    const isFavorite = favorites.includes(projectId)
+
+    setSavingFavoriteIds((current) => [...current, projectId])
+
+    try {
+      const response = await fetch(
+        `${API_URL}/favorites/${encodeURIComponent(projectId)}`,
+        {
+          method: isFavorite ? 'DELETE' : 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+
+      const data = await response.json()
+
+      // Sesijas derīguma termiņš var būt beidzies.
+      if (response.status === 401) {
+        setAuthUser(null)
+        setFavorites([])
+        setShowAuthModal(true)
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || 'Neizdevās mainīt favorītu statusu.',
+        )
+      }
+
+      const saved = Boolean(data.isSaved)
+
+      setFavorites((current) => {
+        if (saved) {
+          return current.includes(projectId)
+            ? current
+            : [...current, projectId]
+        }
+
+        return current.filter((id) => id !== projectId)
+      })
+
+      setNotice(
+        data.message ||
+          (saved
+            ? 'Projekts pievienots favorītiem.'
+            : 'Projekts noņemts no favorītiem.'),
+      )
+
+      setNoticeIsError(false)
+    } catch (err) {
+      setNotice(
+        err instanceof Error
+          ? err.message
+          : 'Neizdevās sazināties ar serveri.',
+      )
+      setNoticeIsError(true)
+    } finally {
+      setSavingFavoriteIds((current) =>
+        current.filter((id) => id !== projectId),
+      )
+    }
   }
 
   function handleProfile() {
     setNotice('Profila lapu pievienosim nākamajā izstrādes solī.')
+    setNoticeIsError(false)
+  }
+
+  function openRegister() {
+    navigate(
+      `/register?returnTo=${encodeURIComponent('/projects')}`,
+    )
+  }
+
+  function openLogin() {
+    navigate(
+      `/login?returnTo=${encodeURIComponent('/projects')}`,
+    )
   }
 
   return (
@@ -165,7 +394,10 @@ export default function ProjectCatalogPage() {
           <Logo />
         </div>
 
-        <nav className="catalog-nav" aria-label="Lietotāja navigācija">
+        <nav
+          className="catalog-nav"
+          aria-label="Lietotāja navigācija"
+        >
           <button
             className="catalog-nav-link"
             onClick={() => navigate('/dashboard')}
@@ -206,7 +438,10 @@ export default function ProjectCatalogPage() {
             <span>Saglabātie</span>
           </button>
 
-          <button className="catalog-nav-link" onClick={handleProfile}>
+          <button
+            className="catalog-nav-link"
+            onClick={handleProfile}
+          >
             <UserRound className="catalog-nav-icon" />
             <span>Profils</span>
           </button>
@@ -243,6 +478,7 @@ export default function ProjectCatalogPage() {
 
           <label className="catalog-search">
             <Search size={20} aria-hidden="true" />
+
             <input
               type="search"
               placeholder="Meklēt projektus..."
@@ -264,8 +500,12 @@ export default function ProjectCatalogPage() {
         </header>
 
         <section className="catalog-heading">
-          <span className="catalog-eyebrow">PROJEKTU KATALOGS</span>
+          <span className="catalog-eyebrow">
+            PROJEKTU KATALOGS
+          </span>
+
           <h1>Atklāj un iedvesmojies</h1>
+
           <p>
             Apskati citu lietotāju publicētos projektus, smelies idejas
             un saglabā sev interesējošos projektus.
@@ -294,7 +534,10 @@ export default function ProjectCatalogPage() {
 
           <div className="catalog-results-heading">
             <div>
-              <span className="catalog-eyebrow">IDEJAS KOPIENAI</span>
+              <span className="catalog-eyebrow">
+                IDEJAS KOPIENAI
+              </span>
+
               <h2>
                 {search || activeCategory !== 'Visi projekti'
                   ? 'Atrasti projekti'
@@ -310,8 +553,14 @@ export default function ProjectCatalogPage() {
         </section>
 
         {notice && (
-          <div className="catalog-notice" role="status">
+          <div
+            className={`catalog-notice ${
+              noticeIsError ? 'catalog-notice-error' : ''
+            }`}
+            role={noticeIsError ? 'alert' : 'status'}
+          >
             <span>{notice}</span>
+
             <button
               onClick={() => setNotice('')}
               aria-label="Aizvērt paziņojumu"
@@ -324,6 +573,7 @@ export default function ProjectCatalogPage() {
         {error && (
           <div className="catalog-message catalog-error" role="alert">
             <p>{error}</p>
+
             <button onClick={() => window.location.reload()}>
               Mēģināt vēlreiz
             </button>
@@ -338,11 +588,13 @@ export default function ProjectCatalogPage() {
         ) : !error && filteredProjects.length === 0 ? (
           <div className="catalog-empty">
             <FolderSearch size={42} />
+
             <h3>
               {projects.length === 0
                 ? 'Pagaidām nav publicētu projektu'
                 : 'Projektus neizdevās atrast'}
             </h3>
+
             <p>
               {projects.length === 0
                 ? 'Kad lietotāji publicēs savus projektus, tie būs redzami šeit.'
@@ -364,21 +616,19 @@ export default function ProjectCatalogPage() {
         ) : (
           <section className="catalog-project-grid">
             {filteredProjects.map((project) => {
-              const imageUrl = getImageUrl(project.imagePath)
               const isFavorite = favorites.includes(project.id)
+              const isSaving = savingFavoriteIds.includes(project.id)
 
               return (
-                <article className="catalog-project-card" key={project.id}>
+                <article
+                  className="catalog-project-card"
+                  key={project.id}
+                >
                   <div className="catalog-project-image">
-                    {imageUrl ? (
-                      <img src={imageUrl} alt={project.title} loading="lazy" />
-                    ) : (
-                      <div className="catalog-image-placeholder">
-                        <Leaf size={36} />
-                      </div>
-                    )}
+                    <CatalogProjectImage project={project} />
 
                     <button
+                      type="button"
                       className={`catalog-favorite-button ${
                         isFavorite ? 'is-favorite' : ''
                       }`}
@@ -388,7 +638,8 @@ export default function ProjectCatalogPage() {
                           : 'Pievienot favorītiem'
                       }
                       aria-pressed={isFavorite}
-                      onClick={() => toggleFavorite(project.id)}
+                      disabled={isSaving || authChecking}
+                      onClick={() => void toggleFavorite(project.id)}
                     >
                       <Heart
                         size={23}
@@ -403,6 +654,7 @@ export default function ProjectCatalogPage() {
                     </span>
 
                     <h3>{project.title}</h3>
+
                     <p className="catalog-project-description">
                       {project.description}
                     </p>
@@ -424,9 +676,7 @@ export default function ProjectCatalogPage() {
                     <button
                       className="catalog-view-button"
                       onClick={() =>
-                        setNotice(
-                          'Detalizēto projekta apskates lapu izveidosim nākamajā solī.',
-                        )
+                        navigate(`/projects/${project.id}`)
                       }
                     >
                       Apskatīt projektu
@@ -442,6 +692,65 @@ export default function ProjectCatalogPage() {
           Do It Lab — idejām, kas pelnījušas kļūt īstas.
         </footer>
       </main>
+
+      {/* Reģistrācijas un pieteikšanās logs viesiem */}
+      {showAuthModal && (
+        <div
+          className="catalog-auth-overlay"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setShowAuthModal(false)
+            }
+          }}
+        >
+          <section
+            className="catalog-auth-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="catalog-auth-title"
+          >
+            <button
+              type="button"
+              className="catalog-auth-close"
+              onClick={() => setShowAuthModal(false)}
+              aria-label="Aizvērt logu"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="catalog-auth-icon">
+              <Heart size={26} />
+            </div>
+
+            <h2 id="catalog-auth-title">
+              Saglabā projektus, kas tevi iedvesmo!
+            </h2>
+
+            <p>
+              Izveido Do It Lab kontu vai piesakies, lai saglabātu
+              interesējošos projektus savā izlasē.
+            </p>
+
+            <div className="catalog-auth-actions">
+              <button
+                type="button"
+                className="catalog-auth-register"
+                onClick={openRegister}
+              >
+                Reģistrēties
+              </button>
+
+              <button
+                type="button"
+                className="catalog-auth-login"
+                onClick={openLogin}
+              >
+                Jau ir konts? Pieteikties
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   )
 }

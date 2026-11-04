@@ -1,18 +1,20 @@
+import "dotenv/config";
 
 import express from "express";
-import dotenv from "dotenv";
 import { prisma } from "./db.js";
 import authRouter from "./routes/auth.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import projectsRouter from "./routes/projects.js";
 import categoriesRouter from "./routes/categories.js";
-
-dotenv.config();
+import favoritesRouter from "./routes/favorites.js";
+import materialsRouter from "./routes/materials.js";
+import imagesRouter from "./routes/images.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// CORS konfigurācija
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -20,20 +22,26 @@ app.use(
   }),
 );
 
-app.use(express.json());
+// Pieprasījumu apstrāde
+app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
+
+// API maršruti
 app.use("/api/auth", authRouter);
 app.use("/api/projects", projectsRouter);
 app.use("/api/categories", categoriesRouter);
+app.use("/api/favorites", favoritesRouter);
+app.use("/api/materials", materialsRouter);
+app.use("/api/images", imagesRouter);
 
-
-
+// Galvenā API pārbaude
 app.get("/", (_req, res) => {
   res.json({
     message: "Do It Lab API darbojas!",
   });
 });
 
+// Datubāzes savienojuma pārbaude
 app.get("/api/health/db", async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
