@@ -15,6 +15,9 @@ import {
   Cpu,
   Palette,
   Hammer,
+  ChevronDown,
+  LogOut,
+  Settings,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -23,6 +26,8 @@ const API_URL = 'http://localhost:5000/api'
 type User = {
   id: string
   email: string
+  displayName?: string | null
+  avatarPath?: string | null
 }
 
 type Category = {
@@ -40,6 +45,8 @@ type PublicProject = {
   user: {
     id: string
     email: string
+    displayName?: string | null
+    avatarPath?: string | null
   }
   _count?: {
     steps: number
@@ -55,18 +62,53 @@ const categoryIcons: Record<string, LucideIcon> = {
   'Citi projekti': Leaf,
 }
 
-function getAuthor(project: PublicProject) {
-  return project.user.email.split('@')[0] || 'Do It Lab lietotājs'
+function getDisplayName(user: {
+  email: string
+  displayName?: string | null
+}) {
+  return user.displayName?.trim() || 'Do It Lab lietotājs'
 }
 
-function getImageUrl(imagePath: string | null) {
-  if (!imagePath) return null
+function getProjectImageUrl(project: PublicProject) {
+  if (!project.imagePath) return null
 
-  if (imagePath.startsWith('http')) {
-    return imagePath
+  return `${API_URL}/images/projects/${encodeURIComponent(project.id)}/cover`
+}
+
+function DashboardProjectImage({
+  project,
+}: {
+  project: PublicProject
+}) {
+  const [imageError, setImageError] = useState(false)
+
+  const imageUrl = getProjectImageUrl(project)
+
+  useEffect(() => {
+    setImageError(false)
+  }, [imageUrl])
+
+  if (!imageUrl || imageError) {
+    return (
+      <div className="dashboard-project-placeholder">
+        <Leaf size={36} />
+        <span>
+          {project.imagePath
+            ? 'Attēlu neizdevās ielādēt'
+            : 'Projekta attēls vēl nav pievienots'}
+        </span>
+      </div>
+    )
   }
 
-  return `http://localhost:5000/${imagePath.replace(/^\/+/, '')}`
+  return (
+    <img
+      src={imageUrl}
+      alt={project.title}
+      loading="lazy"
+      onError={() => setImageError(true)}
+    />
+  )
 }
 
 export default function DashboardPage() {
@@ -85,6 +127,7 @@ export default function DashboardPage() {
     useState('Visas kategorijas')
 
   const [notice, setNotice] = useState('')
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
 
   // Pārbauda lietotāja sesiju.
   useEffect(() => {
@@ -130,7 +173,7 @@ export default function DashboardPage() {
     }
   }, [navigate])
 
-  // Ielādē publiskos projektus un kategorijas no datubāzes.
+  // Ielādē publiskos projektus un kategorijas.
   useEffect(() => {
     let active = true
 
@@ -146,15 +189,11 @@ export default function DashboardPage() {
           ])
 
         if (!projectsResponse.ok) {
-          throw new Error(
-            'Neizdevās ielādēt publiskos projektus.',
-          )
+          throw new Error('Neizdevās ielādēt publiskos projektus.')
         }
 
         if (!categoriesResponse.ok) {
-          throw new Error(
-            'Neizdevās ielādēt projektu kategorijas.',
-          )
+          throw new Error('Neizdevās ielādēt projektu kategorijas.')
         }
 
         const projectsData = await projectsResponse.json()
@@ -215,7 +254,7 @@ export default function DashboardPage() {
 
     return projects.filter((project) => {
       const categoryName = project.category?.name ?? ''
-      const authorName = getAuthor(project)
+      const authorName = getDisplayName(project.user)
 
       const matchesCategory =
         activeCategory === 'Visas kategorijas' ||
@@ -232,6 +271,9 @@ export default function DashboardPage() {
     })
   }, [projects, search, activeCategory])
 
+  // Dashboard rāda tikai 8 jaunākos atbilstošos projektus.
+  const displayedProjects = filteredProjects.slice(0, 8)
+
   async function handleLogout() {
     try {
       await fetch(`${API_URL}/auth/logout`, {
@@ -243,10 +285,9 @@ export default function DashboardPage() {
     }
   }
 
-  const displayName = user?.email.split('@')[0] ?? ''
+  const displayName = user ? getDisplayName(user) : ''
   const initial = displayName.charAt(0).toUpperCase() || 'L'
 
-  // Lietotāja ielādes laikā.
   if (loading) {
     return (
       <main className="dashboard-loading">
@@ -323,14 +364,11 @@ export default function DashboardPage() {
 
           <button
             className="dashboard-nav-link"
-            onClick={() =>
-              setNotice(`Tavs konts: ${user.email}`)
-            }
+            onClick={() => navigate('/profile')}
           >
             <UserRound className="nav-icon" />
             <span>Profils</span>
           </button>
-        </nav>
 
         <div className="sidebar-bottom">
           <div className="sidebar-motto">
@@ -340,14 +378,8 @@ export default function DashboardPage() {
             <br />
             DALIES.
           </div>
-
-          <button
-            className="logout-button"
-            onClick={handleLogout}
-          >
-            ↗ Izrakstīties
-          </button>
         </div>
+        </nav>
       </aside>
 
       <div className="dashboard-main">
@@ -375,15 +407,58 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <button
-            className="dashboard-user"
-            onClick={handleLogout}
-            title="Noklikšķini, lai izrakstītos"
-          >
-            <span className="user-avatar">{initial}</span>
-            <span className="user-name">{displayName}</span>
-            <span aria-hidden="true">⌄</span>
-          </button>
+          <div className="dashboard-profile-wrapper">
+            <button
+              type="button"
+              className="dashboard-user"
+              onClick={() => setProfileMenuOpen((open) => !open)}
+              aria-expanded={profileMenuOpen}
+              aria-haspopup="true"
+              title="Atvērt profila izvēlni"
+            >
+              <span className="user-avatar">{initial}</span>
+              <span className="user-name">{displayName}</span>
+              <ChevronDown size={16} />
+            </button>
+
+            {profileMenuOpen && (
+              <div className="profile-dropdown">
+                <div className="profile-dropdown-info">
+                  <span className="profile-dropdown-avatar">
+                    {initial}
+                  </span>
+
+                  <div className="profile-dropdown-text">
+                    <strong>{displayName}</strong>
+                    <span>Do it Lab dalībnieks</span>
+                  </div>
+                </div>
+
+                <div className="profile-dropdown-divider" />
+
+                <button
+                  type="button"
+                  className="profile-dropdown-item"
+                  onClick={() => {
+                    setProfileMenuOpen(false)
+                    navigate('/profile')
+                  }}
+                >
+                  <Settings size={17} />
+                  Profila iestatījumi
+                </button>
+
+                <button
+                  type="button"
+                  className="profile-dropdown-item logout"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={17} />
+                  Izrakstīties
+                </button>
+              </div>
+            )}
+          </div>
         </header>
 
         <main id="sakums" className="dashboard-content">
@@ -444,12 +519,8 @@ export default function DashboardPage() {
                         ? 'selected'
                         : ''
                     }`}
-                    onClick={() =>
-                      setActiveCategory(category.name)
-                    }
-                    aria-pressed={
-                      activeCategory === category.name
-                    }
+                    onClick={() => setActiveCategory(category.name)}
+                    aria-pressed={activeCategory === category.name}
                   >
                     <CategoryIcon className="category-icon" />
                     <span>{category.name}</span>
@@ -457,13 +528,6 @@ export default function DashboardPage() {
                 )
               })}
             </div>
-
-            <button
-              className="dashboard-primary-button create-project-button"
-              onClick={() => navigate('/projects/new')}
-            >
-              <span>＋</span> Izveidot projektu
-            </button>
           </section>
 
           <section className="dashboard-projects" id="projekti">
@@ -482,8 +546,11 @@ export default function DashboardPage() {
               </div>
 
               <span className="project-count">
-                {filteredProjects.length}{' '}
-                {filteredProjects.length === 1
+                {displayedProjects.length}
+                {filteredProjects.length > 8
+                  ? ` no ${filteredProjects.length}`
+                  : ''}{' '}
+                {displayedProjects.length === 1
                   ? 'projekts'
                   : 'projekti'}
               </span>
@@ -506,61 +573,59 @@ export default function DashboardPage() {
                   Mēģināt vēlreiz
                 </button>
               </div>
-            ) : filteredProjects.length > 0 ? (
-              <div className="dashboard-project-grid">
-                {filteredProjects.map((project) => {
-                  const imageUrl = getImageUrl(project.imagePath)
-                  const authorName = getAuthor(project)
+            ) : displayedProjects.length > 0 ? (
+              <>
+                <div className="dashboard-project-grid">
+                  {displayedProjects.map((project) => {
+                    const authorName = getDisplayName(project.user)
 
-                  return (
-                    <article
-                      className="dashboard-project-card"
-                      key={project.id}
-                    >
-                      <div className="dashboard-project-image">
-                        {imageUrl ? (
-                          <img
-                            src={imageUrl}
-                            alt={project.title}
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="dashboard-project-placeholder">
-                            <Leaf size={36} />
-                            <span>
-                              Projekta attēls vēl nav pievienots
+                    return (
+                      <article
+                        className="dashboard-project-card"
+                        key={project.id}
+                      >
+                        <div className="dashboard-project-image">
+                          <DashboardProjectImage project={project} />
+                        </div>
+
+                        <div className="dashboard-project-info">
+                          <span className="dashboard-project-category">
+                            {project.category?.name ?? 'Bez kategorijas'}
+                          </span>
+
+                          <h3>{project.title}</h3>
+
+                          <p className="dashboard-project-description">
+                            {project.description}
+                          </p>
+
+                          <div className="dashboard-project-footer">
+                            <span className="project-author">
+                              <span className="author-avatar">
+                                {authorName.charAt(0).toUpperCase()}
+                              </span>
+                              {authorName}
                             </span>
                           </div>
-                        )}
-                      </div>
-
-                      <div className="dashboard-project-info">
-                        <span className="dashboard-project-category">
-                          {project.category?.name ??
-                            'Bez kategorijas'}
-                        </span>
-
-                        <h3>{project.title}</h3>
-
-                        <p className="dashboard-project-description">
-                          {project.description}
-                        </p>
-
-                        <div className="dashboard-project-footer">
-                          <span className="project-author">
-                            <span className="author-avatar">
-                              {authorName
-                                .charAt(0)
-                                .toUpperCase()}
-                            </span>
-                            {authorName}
-                          </span>
                         </div>
-                      </div>
-                    </article>
-                  )
-                })}
-              </div>
+                      </article>
+                    )
+                  })}
+                </div>
+
+                {!search &&
+                  activeCategory === 'Visas kategorijas' &&
+                  filteredProjects.length > 8 && (
+                    <div className="dashboard-catalog-link">
+                      <button
+                        className="dashboard-secondary-button"
+                        onClick={() => navigate('/projects')}
+                      >
+                        Apskatīt visus projektus
+                      </button>
+                    </div>
+                  )}
+              </>
             ) : (
               <div className="dashboard-empty">
                 <span>⌕</span>

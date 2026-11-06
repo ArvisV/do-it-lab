@@ -67,10 +67,7 @@ const categories = [
 
 function getAuthor(project: Project) {
   return (
-    project.user?.displayName ||
-    project.user?.name ||
-    project.author ||
-    project.user?.email?.split('@')[0] ||
+    project.user?.displayName?.trim() ||
     'Do It Lab lietotājs'
   )
 }

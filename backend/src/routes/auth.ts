@@ -396,6 +396,28 @@ router.post(
         return;
       }
 
+      // Pēc e-pasta apstiprināšanas automātiski izveidojam sesiju.
+      const sessionToken = randomBytes(32).toString("hex");
+
+      const sessionHash = hashSessionToken(sessionToken);
+
+      const sessionExpiresAt = new Date(
+        Date.now() + sessionLifetimeMs,
+      );
+
+      await prisma.session.create({
+        data: {
+          userId: user.id,
+          tokenHash: sessionHash,
+          expiresAt: sessionExpiresAt,
+        },
+      });
+
+      res.cookie(sessionCookieName, sessionToken, {
+        ...sessionCookieOptions,
+        maxAge: sessionLifetimeMs,
+      });
+
       res.json({
         message: "E-pasta adrese veiksmīgi apstiprināta!",
       });
@@ -494,6 +516,8 @@ router.post("/login", loginLimiter, async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
+        displayName: user.displayName,
+        avatarPath: user.avatarPath,
       },
     });
   } catch (error) {
@@ -532,6 +556,8 @@ router.get("/me", async (req, res) => {
           select: {
             id: true,
             email: true,
+            displayName: true,
+            avatarPath: true,
           },
         },
       },
@@ -556,6 +582,8 @@ router.get("/me", async (req, res) => {
       user: {
         id: session.user.id,
         email: session.user.email,
+        displayName: session.user.displayName,
+        avatarPath: session.user.avatarPath,
       },
     });
   } catch (error) {
@@ -564,6 +592,58 @@ router.get("/me", async (req, res) => {
     res.status(500).json({
       message: "Neizdevās pārbaudīt sesiju.",
     });
+  }
+});
+
+// =====================================================
+// PROFILA ATTĒLOJAMĀ VĀRDA MAIŅA
+// PATCH /api/auth/profile
+// =====================================================
+
+router.patch("/profile", async (req, res) => {
+  try {
+    const token = req.cookies?.[sessionCookieName];
+
+    if (typeof token !== "string" || !/^[a-f0-9]{64}$/i.test(token)) {
+      res.status(401).json({ message: "Jāielogojas." });
+      return;
+    }
+
+    const session = await prisma.session.findUnique({
+      where: { tokenHash: hashSessionToken(token) },
+      select: { id: true, userId: true, expiresAt: true },
+    });
+
+    if (!session || session.expiresAt <= new Date()) {
+      res.status(401).json({ message: "Sesija nav derīga." });
+      return;
+    }
+
+    const body = req.body;
+    if (!body || typeof body !== "object" || Array.isArray(body) ||
+        typeof body.displayName !== "string") {
+      res.status(400).json({ message: "Norādi attēlojamo vārdu." });
+      return;
+    }
+
+    const displayName = body.displayName.trim().replace(/\s+/g, " ");
+    if (displayName.length < 2 || [...displayName].length > 50) {
+      res.status(400).json({
+        message: "Attēlojamajam vārdam jābūt no 2 līdz 50 rakstzīmēm.",
+      });
+      return;
+    }
+
+    const user = await prisma.user.update({
+      where: { id: session.userId },
+      data: { displayName },
+      select: { id: true, email: true, displayName: true, avatarPath: true },
+    });
+
+    res.json({ message: "Profils atjaunināts.", user });
+  } catch (error) {
+    console.error("Profila atjaunināšanas kļūda:", error);
+    res.status(500).json({ message: "Neizdevās atjaunināt profilu." });
   }
 });
 

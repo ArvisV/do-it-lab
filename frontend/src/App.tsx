@@ -25,6 +25,8 @@ import ProjectManagementPage from './pages/ProjectManagementPage'
 
 import Logo from './components/Logo'
 import './App.css'
+import VerifyEmailPage from './pages/VerifyEmailPage'
+import ProfilePage from './pages/ProfilePage'
 
 const API_URL = 'http://localhost:5000/api'
 
@@ -515,6 +517,15 @@ function App() {
       />
 
       <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/projects/new"
         element={
           <ProtectedRoute>
@@ -553,6 +564,7 @@ function App() {
       {/* Nezināmi maršruti */}
 
       <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
     </Routes>
   )
 }

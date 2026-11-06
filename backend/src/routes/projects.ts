@@ -26,7 +26,11 @@ router.get("/", async (_req, res) => {
       include: {
         category: true,
         user: {
-          select: { id: true, email: true },
+          select: {
+            id: true,
+            email: true,
+            displayName: true,
+          },
         },
         _count: {
           select: { steps: true },
@@ -38,7 +42,9 @@ router.get("/", async (_req, res) => {
     res.json({ projects });
   } catch (error) {
     console.error("Projektu ielādes kļūda:", error);
-    res.status(500).json({ message: "Neizdevās ielādēt projektus." });
+    res.status(500).json({
+      message: "Neizdevās ielādēt projektus.",
+    });
   }
 });
 
@@ -91,7 +97,10 @@ router.get(
         include: {
           category: true,
           user: {
-            select: { id: true, email: true },
+            select: { 
+              id: true,
+              displayName: true,
+            },
           },
           steps: {
             orderBy: { stepNumber: "asc" },

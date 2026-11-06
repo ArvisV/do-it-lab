@@ -52,7 +52,7 @@ type Project = {
   } | null
   user: {
     id: string
-    email: string
+    displayName?: string | null
   }
   steps: ProjectStep[]
   _count: {
@@ -72,7 +72,7 @@ function formatQuantity(value: number | string) {
 }
 
 function getAuthorName(project: Project) {
-  return project.user?.email?.split('@')[0] || 'Do It Lab lietotājs'
+  return project.user?.displayName?.trim() || 'Do It Lab lietotājs'
 }
 
 function formatDate(date: string) {

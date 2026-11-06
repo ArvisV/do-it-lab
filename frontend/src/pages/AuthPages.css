@@ -327,3 +327,26 @@
 .password-toggle:hover {
   color: var(--color-green-dark);
 }
+
+.auth-success {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #c9dfcf;
+  border-radius: 12px;
+  color: var(--color-green);
+  background: #edf6ef;
+  font-size: 13px;
+}
+
+.auth-success span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: var(--color-green);
+  font-size: 20px;
+}

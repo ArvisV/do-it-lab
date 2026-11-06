@@ -8,10 +8,13 @@ datasource db {
   provider = "postgresql"
 }
 
+
 model User {
   id                String   @id @default(uuid())
   email             String   @unique
   passwordHash      String
+  displayName       String?
+  avatarPath        String?
   emailVerifiedAt   DateTime?
   twoFactorEnabled  Boolean  @default(false)
   createdAt         DateTime @default(now())
@@ -22,6 +25,7 @@ model User {
   projects           Project[]
   favorites          Favorite[]
 }
+
 
 model EmailVerification {
   id         String   @id @default(uuid())
