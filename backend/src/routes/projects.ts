@@ -261,7 +261,7 @@ router.get(
 
 // GET /api/projects/:id — publiska projekta lapa
 // Pieejama tikai publicētiem projektiem.
-router.get("/:id", requireAuth, async (req, res) => {
+router.get("/:id", requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
     const id = getParam(req.params.id);
 
@@ -280,7 +280,7 @@ router.get("/:id", requireAuth, async (req, res) => {
       include: {
         category: true,
         user: {
-          select: { id: true, email: true },
+          select: { id: true, displayName: true },
         },
         steps: {
           orderBy: { stepNumber: "asc" },
@@ -351,12 +351,19 @@ router.get("/:id", requireAuth, async (req, res) => {
       };
     });
 
-    // Privātas galerijas attēlus publiskajā atbildē neiekļaujam.
-    const publicGalleryImages = project.isGalleryPublic
+    // Galeriju redz projekta īpašnieks vai autorizēts lietotājs,
+    // ja projekta īpašnieks galeriju ir iestatījis kā publisku.
+    const canViewGallery =
+      project.isGalleryPublic ||
+      project.userId === req.userId;
+
+    const visibleGalleryImages = canViewGallery
       ? project.galleryImages
       : [];
 
+
     const {
+      userId: _userId,
       materials: _privateMaterials,
       galleryImages: _galleryImages,
       ...publicProject
@@ -366,7 +373,7 @@ router.get("/:id", requireAuth, async (req, res) => {
       project: {
         ...publicProject,
         requiredMaterials,
-        galleryImages: publicGalleryImages,
+        galleryImages: visibleGalleryImages,
       },
     });
   } catch (error) {

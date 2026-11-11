@@ -478,7 +478,7 @@ router.delete(
 // apmeklētājs, ja projekts ir publicēts un galerija publiska.
 router.get(
   "/gallery/:imageId",
-  optionalAuth,
+  requireAuth,
   async (req: AuthenticatedRequest, res) => {
     try {
       const imageId = getParam(req.params.imageId);

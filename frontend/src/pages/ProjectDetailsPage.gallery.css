@@ -1,0 +1,465 @@
+/* =====================================================
+   PROJECT DETAILS — GALERIJA UN PROFILA IZVĒLNE
+   Pievieno šos stilus esošā ProjectDetailsPage.css beigās.
+   ===================================================== */
+
+/* Galvenes darbības un lietotāja profils */
+.public-detail-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.public-detail-profile-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.public-detail-user-button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 270px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: #263b31;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 180ms ease;
+}
+
+.public-detail-user-button:hover,
+.public-detail-user-button[aria-expanded='true'] {
+  background: #f0f3ed;
+}
+
+.public-detail-user-button > svg {
+  flex-shrink: 0;
+  color: #778278;
+}
+
+.public-detail-user-avatar,
+.public-detail-profile-dropdown-avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 37px;
+  height: 37px;
+  border-radius: 50%;
+  background: #dce8d8;
+  color: #1d4533;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.public-detail-user-name {
+  max-width: 155px;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.public-detail-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 30;
+  width: 270px;
+  padding: 12px;
+  border: 1px solid #e5e5da;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(40, 45, 40, 0.1);
+  animation: public-detail-profile-appear 160ms ease;
+}
+
+@keyframes public-detail-profile-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.public-detail-profile-dropdown-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 5px 12px;
+}
+
+.public-detail-profile-dropdown-avatar {
+  width: 42px;
+  height: 42px;
+  font-size: 16px;
+}
+
+.public-detail-profile-dropdown-text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.public-detail-profile-dropdown-text strong {
+  overflow: hidden;
+  color: #282d28;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.public-detail-profile-dropdown-text span {
+  color: #73796f;
+  font-size: 11px;
+}
+
+.public-detail-profile-dropdown-divider {
+  height: 1px;
+  margin: 3px 0 8px;
+  background: #e5e5da;
+}
+
+.public-detail-profile-dropdown-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #536653;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.public-detail-profile-dropdown-item:hover {
+  background: #edf3e9;
+  color: #285943;
+}
+
+.public-detail-profile-dropdown-item.logout {
+  color: #a34c40;
+}
+
+.public-detail-profile-dropdown-item.logout:hover {
+  background: #fff3f0;
+  color: #963f35;
+}
+
+/* Galerijas poga blakus projekta saglabāšanai */
+.public-detail-heading-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.public-detail-gallery-button {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 17px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.public-detail-gallery-button.is-public {
+  border-color: #3e7650;
+  background: #376b4a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.public-detail-gallery-button.is-public:hover {
+  border-color: #285943;
+  background: #285943;
+  transform: translateY(-1px);
+}
+
+.public-detail-gallery-button.is-private,
+.public-detail-gallery-button:disabled {
+  border-color: #e2e5df;
+  background: #eceeea;
+  color: #929991;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* Galerijas sadaļa */
+.public-detail-gallery-section {
+  margin-top: 38px;
+  scroll-margin-top: 28px;
+}
+
+.public-detail-gallery-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 21px;
+}
+
+.public-detail-gallery-heading h2 {
+  margin: 7px 0 0;
+  color: #2c4034;
+  font-family: 'Manrope', sans-serif;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.public-detail-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.public-detail-gallery-item {
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 150px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid #e5e9e1;
+  border-radius: 14px;
+  background: #edf0e9;
+  cursor: zoom-in;
+  text-align: left;
+}
+
+.public-detail-gallery-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 220ms ease;
+}
+
+.public-detail-gallery-item:hover img {
+  transform: scale(1.035);
+}
+
+.public-detail-gallery-item:disabled {
+  cursor: default;
+}
+
+.public-detail-gallery-caption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  padding: 24px 12px 11px;
+  background: linear-gradient(transparent, rgba(20, 35, 25, 0.72));
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.public-detail-gallery-placeholder,
+.public-detail-gallery-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  background: #f2f5ef;
+  color: #829681;
+  text-align: center;
+}
+
+.public-detail-gallery-placeholder {
+  width: 100%;
+  height: 100%;
+  font-size: 11px;
+}
+
+.public-detail-gallery-empty {
+  min-height: 190px;
+  padding: 28px;
+  border: 1px dashed #d8e2d5;
+  border-radius: 15px;
+}
+
+.public-detail-gallery-empty h3 {
+  margin: 3px 0 0;
+  color: #405847;
+  font-family: 'Manrope', sans-serif;
+  font-size: 16px;
+}
+
+.public-detail-gallery-empty p {
+  margin: 0;
+  color: #849087;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Palielinātā attēla skats */
+.public-detail-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  background: rgba(17, 27, 20, 0.82);
+  backdrop-filter: blur(5px);
+}
+
+.public-detail-lightbox {
+  position: relative;
+  display: flex;
+  width: min(1100px, 100%);
+  max-height: calc(100vh - 60px);
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 17px;
+  background: #17231b;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
+.public-detail-lightbox > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: calc(100vh - 140px);
+  border-radius: 9px;
+  object-fit: contain;
+}
+
+.public-detail-lightbox > p {
+  max-width: 100%;
+  margin: 0;
+  color: #f4f5ef;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.public-detail-lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  background: rgba(20, 30, 23, 0.78);
+  color: #fff;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.public-detail-lightbox-close:hover {
+  background: #376b4a;
+}
+
+@media (max-width: 850px) {
+  .public-detail-header-actions {
+    gap: 12px;
+  }
+
+  .public-detail-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .public-detail-header-actions {
+    gap: 7px;
+  }
+
+  .public-detail-user-button {
+    gap: 5px;
+    padding: 4px;
+  }
+
+  .public-detail-user-avatar {
+    width: 33px;
+    height: 33px;
+  }
+
+  .public-detail-user-name {
+    display: none;
+  }
+
+  .public-detail-profile-dropdown {
+    width: min(270px, calc(100vw - 30px));
+  }
+
+  .public-detail-heading-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .public-detail-gallery-button,
+  .public-detail-save-button {
+    min-height: 43px;
+    padding-inline: 13px;
+    font-size: 12px;
+  }
+
+  .public-detail-gallery-heading h2 {
+    font-size: 22px;
+  }
+
+  .public-detail-gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .public-detail-gallery-item {
+    min-height: 200px;
+  }
+
+  .public-detail-lightbox-overlay {
+    padding: 12px;
+  }
+
+  .public-detail-lightbox {
+    padding: 10px;
+  }
+
+  .public-detail-lightbox > img {
+    max-height: calc(100vh - 110px);
+  }
+}
