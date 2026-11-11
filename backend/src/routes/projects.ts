@@ -28,7 +28,6 @@ router.get("/", async (_req, res) => {
         user: {
           select: {
             id: true,
-            email: true,
             displayName: true,
           },
         },
@@ -47,6 +46,112 @@ router.get("/", async (_req, res) => {
     });
   }
 });
+
+
+// GET /api/projects/public-catalog
+// Publiskais katalogs ar meklēšanu, kategorijām un lapošanu.
+router.get("/public-catalog", async (req, res) => {
+  try {
+    // Vienā lapā vienmēr rādām 12 projektus.
+    const pageSize = 12;
+
+    // Nosakām pašreizējo lapu.
+    const requestedPage = Number.parseInt(
+      String(req.query.page ?? "1"),
+      10,
+    );
+
+    const page = Number.isFinite(requestedPage)
+      ? Math.max(1, requestedPage)
+      : 1;
+
+    // Izvēlētās kategorijas ID.
+    const categoryId =
+      typeof req.query.categoryId === "string"
+        ? req.query.categoryId.trim()
+        : "";
+
+    // Meklēšanas teksts.
+    const search =
+      typeof req.query.search === "string"
+        ? req.query.search.trim()
+        : "";
+
+    // Atlases nosacījumi.
+    const where = {
+      isPublished: true,
+
+      ...(categoryId ? { categoryId } : {}),
+
+      ...(search
+        ? {
+            OR: [
+              {
+                title: {
+                  contains: search,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                description: {
+                  contains: search,
+                  mode: "insensitive" as const,
+                },
+              },
+            ],
+          }
+        : {}),
+    };
+
+    // Vienlaikus iegūstam vajadzīgās lapas projektus
+    // un kopējo atbilstošo projektu skaitu.
+    const [projects, totalProjects] = await Promise.all([
+      prisma.project.findMany({
+        where,
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              displayName: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+
+      prisma.project.count({ where }),
+    ]);
+
+    const totalPages = Math.ceil(totalProjects / pageSize);
+
+    res.json({
+      projects,
+      pagination: {
+        currentPage: page,
+        pageSize,
+        totalProjects,
+        totalPages,
+      },
+    });
+  } catch (error) {
+    console.error("Publiskā kataloga ielādes kļūda:", error);
+
+    res.status(500).json({
+      message: "Neizdevās ielādēt publiskā kataloga projektus.",
+    });
+  }
+});
+
 
 // GET /api/projects/mine — pašreizējā lietotāja projekti
 router.get(
@@ -156,7 +261,7 @@ router.get(
 
 // GET /api/projects/:id — publiska projekta lapa
 // Pieejama tikai publicētiem projektiem.
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireAuth, async (req, res) => {
   try {
     const id = getParam(req.params.id);
 

@@ -27,6 +27,7 @@ import Logo from './components/Logo'
 import './App.css'
 import VerifyEmailPage from './pages/VerifyEmailPage'
 import ProfilePage from './pages/ProfilePage'
+import PublicProjectCatalogPage from './pages/PublicProjectCatalogPage'
 
 const API_URL = 'http://localhost:5000/api'
 
@@ -42,7 +43,7 @@ type PublicProject = {
   } | null
   user: {
     id: string
-    email: string
+    displayName: string | null
   }
 }
 
@@ -168,7 +169,7 @@ function getProjectCoverUrl(project: PublicProject) {
 // =====================================================
 
 function getAuthor(project: PublicProject) {
-  return project.user?.email?.split('@')[0] || 'Do It Lab lietotājs'
+  return project.user?.displayName?.trim() || 'Do It Lab lietotājs'
 }
 
 // =====================================================
@@ -183,65 +184,69 @@ function ArrowIcon() {
 // PUBLISKĀ PROJEKTA KARTĪTE
 // =====================================================
 
+
 function ProjectCard({ project }: { project: PublicProject }) {
   const imageUrl = getProjectCoverUrl(project)
   const [imageError, setImageError] = useState(false)
 
   return (
-    <article className="project-card">
-      <Link
-        to={`/projects/${project.id}`}
-        className="project-image-link"
-        aria-label={`Apskatīt projektu: ${project.title}`}
-      >
-        {imageUrl && !imageError ? (
-          <img
-            className="project-image"
-            src={imageUrl}
-            alt={project.title}
-            loading="lazy"
-            onError={() => setImageError(true)}
-          />
-        ) : (
-          <div className="project-image-placeholder">
-            <Leaf size={38} />
-            <span>Attēls vēl nav pievienots</span>
-          </div>
-        )}
+    <Link
+      to="/public-projects"
+      className="project-card-link"
+      aria-label="Apskatīt publisko projektu katalogu"
+    >
+      <article className="project-card">
+        <div className="project-image-link">
+          {imageUrl && !imageError ? (
+            <img
+              className="project-image"
+              src={imageUrl}
+              alt={project.title}
+              loading="lazy"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <div className="project-image-placeholder">
+              <Leaf size={38} />
+              <span>Attēls vēl nav pievienots</span>
+            </div>
+          )}
 
-        <span className="image-arrow" aria-hidden="true">
-          <ArrowIcon />
-        </span>
-      </Link>
-
-      <div className="project-card-content">
-        <span className="project-category">
-          {project.category?.name ?? 'Bez kategorijas'}
-        </span>
-
-        <h3>{project.title}</h3>
-
-        <p className="public-project-description">
-          {project.description}
-        </p>
-
-        <div className="project-card-footer">
-          <div className="author">
-            <span className="author-avatar">
-              {getAuthor(project).charAt(0).toUpperCase()}
-            </span>
-
-            <span>{getAuthor(project)}</span>
-          </div>
-
-          <span className="public-project-date">
-            {new Date(project.createdAt).toLocaleDateString('lv-LV')}
+          <span className="image-arrow" aria-hidden="true">
+            <ArrowIcon />
           </span>
         </div>
-      </div>
-    </article>
+
+        <div className="project-card-content">
+          <span className="project-category">
+            {project.category?.name ?? 'Bez kategorijas'}
+          </span>
+
+          <h3>{project.title}</h3>
+
+          <p className="public-project-description">
+            {project.description}
+          </p>
+
+          <div className="project-card-footer">
+            <div className="author">
+              <span className="author-avatar">
+                {getAuthor(project).charAt(0).toUpperCase()}
+              </span>
+
+              <span>{getAuthor(project)}</span>
+            </div>
+
+            <span className="public-project-date">
+              {new Date(project.createdAt).toLocaleDateString('lv-LV')}
+            </span>
+          </div>
+        </div>
+      </article>
+    </Link>
   )
 }
+
 
 // =====================================================
 // PUBLISKĀ SĀKUMLAPA
@@ -367,9 +372,9 @@ function HomePage() {
             </p>
 
             <div className="hero-actions">
-              <a className="button button-primary" href="#projekti">
+              <Link className="button button-primary" to="/public-projects">
                 Apskatīt projektus <ArrowIcon />
-              </a>
+              </Link>
 
               <Link
                 className="button button-secondary"
@@ -461,7 +466,7 @@ function HomePage() {
             <div className="public-projects-more">
               <Link
                 className="button button-secondary"
-                to="/projects"
+                to="/public-projects"
               >
                 Apskatīt visus projektus <ArrowIcon />
               </Link>
@@ -497,13 +502,37 @@ function HomePage() {
 function App() {
   return (
     <Routes>
+
       {/* Publiskās lapas */}
 
       <Route path="/" element={<HomePage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/projects" element={<ProjectCatalogPage />} />
-      <Route path="/projects/:id" element={<ProjectDetailsPage />} />
+
+      {/* Jaunais publiskais projektu katalogs */}
+      <Route
+        path="/public-projects"
+        element={<PublicProjectCatalogPage />}
+      />
+
+      {/* Reģistrēto lietotāju katalogs un projektu detaļas */}
+      <Route
+        path="/projects"
+        element={
+          <ProtectedRoute>
+            <ProjectCatalogPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/projects/:id"
+        element={
+          <ProtectedRoute>
+            <ProjectDetailsPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Tikai pieslēgtiem lietotājiem */}
 

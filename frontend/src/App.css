@@ -296,6 +296,13 @@
   gap: 22px;
 }
 
+.project-card-link {
+  display: block;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
 .project-card {
   min-width: 0;
   overflow: hidden;
