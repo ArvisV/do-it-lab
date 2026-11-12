@@ -1,0 +1,223 @@
+/* Do It Lab — botanical sidebar */
+
+.app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+  width: 262px;
+  overflow: hidden;
+  isolation: isolate;
+
+  background:
+    radial-gradient(ellipse at 18% 18%, rgba(255, 255, 239, 0.72), transparent 42%),
+    linear-gradient(160deg, #edf2df 0%, #e6edcf 52%, #dce8c5 100%);
+  border-right: 1px solid rgba(40, 89, 67, 0.14);
+  box-shadow: 5px 0 22px rgba(48, 73, 49, 0.035);
+}
+
+/* Decorative waves and botanical branch, drawn in CSS/SVG so no image file is needed. */
+.app-sidebar::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -82px;
+  right: -70px;
+  bottom: -24px;
+  height: 43%;
+  pointer-events: none;
+  opacity: 0.9;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 430' preserveAspectRatio='none'%3E%3Cpath d='M0 178 C95 115 145 210 230 165 C305 125 342 66 420 82 L420 430 L0 430Z' fill='%23d2e1b9' fill-opacity='.72'/%3E%3Cpath d='M0 255 C92 190 156 275 238 226 C318 178 352 140 420 153 L420 430 L0 430Z' fill='%23c1d6a6' fill-opacity='.65'/%3E%3Cpath d='M0 325 C80 270 152 330 225 292 C306 250 350 230 420 244 L420 430 L0 430Z' fill='%23afca91' fill-opacity='.42'/%3E%3Cg fill='none' stroke='%237c9b62' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' opacity='.86'%3E%3Cpath d='M-8 360 C42 302 66 240 105 185 C128 151 147 132 178 112'/%3E%3C/g%3E%3Cg fill='%238ca96e' opacity='.9'%3E%3Cellipse cx='104' cy='198' rx='17' ry='43' transform='rotate(-37 104 198)'/%3E%3Cellipse cx='153' cy='158' rx='17' ry='43' transform='rotate(48 153 158)'/%3E%3Cellipse cx='61' cy='264' rx='15' ry='38' transform='rotate(-35 61 264)'/%3E%3Cellipse cx='117' cy='244' rx='15' ry='38' transform='rotate(55 117 244)'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.app-sidebar::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -54px;
+  bottom: 18%;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 239, 0.32), transparent 70%);
+  pointer-events: none;
+}
+
+.sidebar-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 28px 20px 22px;
+}
+
+.sidebar-logo {
+  position: relative;
+  padding: 0 8px 27px;
+  border-bottom: 0;
+}
+
+/* Fine divider with a small leaf accent below the logo. */
+.sidebar-logo::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  bottom: 0;
+  height: 1px;
+  background: rgba(62, 104, 67, 0.24);
+}
+
+.sidebar-logo::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 11px;
+  height: 11px;
+  border-radius: 100% 0 100% 0;
+  background: #78965e;
+  transform: translateX(-50%) rotate(-28deg);
+  box-shadow: 0 0 0 5px #e8efda;
+}
+
+.sidebar-navigation {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  padding: 12px 16px;
+
+  border: 1px solid transparent;
+  border-radius: 18px;
+  background: rgba(246, 248, 232, 0.56);
+  color: #1d4533;
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.sidebar-link:hover {
+  background: rgba(255, 255, 239, 0.9);
+  border-color: rgba(48, 91, 62, 0.12);
+  transform: translateX(2px);
+}
+
+.sidebar-link.active {
+  background: linear-gradient(135deg, #285e43 0%, #174b35 100%);
+  border-color: rgba(20, 68, 46, 0.25);
+  color: #fffef5;
+  font-weight: 700;
+  box-shadow: 0 7px 16px rgba(28, 78, 53, 0.16);
+}
+
+.sidebar-link.active:hover {
+  background: linear-gradient(135deg, #24583e 0%, #16452f 100%);
+}
+
+.sidebar-icon {
+  width: 23px;
+  height: 23px;
+  flex-shrink: 0;
+  stroke-width: 1.9;
+  color: currentColor;
+}
+
+.sidebar-bottom {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+}
+
+.sidebar-bottom p {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+  padding: 0 12px 18px;
+
+  color: #174b35;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  line-height: 2.05;
+}
+
+.sidebar-bottom p::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  bottom: 0;
+  width: 42px;
+  height: 2px;
+  border-radius: 2px;
+  background: #66884f;
+}
+
+@media (max-width: 760px) {
+  .app-sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    bottom: auto;
+    border-right: 0;
+    border-bottom: 1px solid rgba(40, 89, 67, 0.14);
+  }
+
+  .app-sidebar::before,
+  .app-sidebar::after {
+    display: none;
+  }
+
+  .sidebar-inner {
+    padding: 16px 18px;
+  }
+
+  .sidebar-logo {
+    padding: 0 8px 14px;
+  }
+
+  .sidebar-navigation {
+    display: flex;
+    overflow-x: auto;
+    gap: 7px;
+    margin-top: 16px;
+    padding-bottom: 2px;
+  }
+
+  .sidebar-link {
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    font-size: 12px;
+  }
+
+  .sidebar-bottom {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar-link {
+    transition: none;
+  }
+}

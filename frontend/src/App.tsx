@@ -28,6 +28,7 @@ import './App.css'
 import VerifyEmailPage from './pages/VerifyEmailPage'
 import ProfilePage from './pages/ProfilePage'
 import PublicProjectCatalogPage from './pages/PublicProjectCatalogPage'
+import AppLayout from './components/AppLayout'
 
 const API_URL = 'http://localhost:5000/api'
 
@@ -152,6 +153,16 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   }
 
   return <>{children}</>
+}
+
+function ProtectedLayout({ children }: { children: ReactNode }) {
+  return (
+    <ProtectedRoute>
+      <AppLayout>
+        {children}
+      </AppLayout>
+    </ProtectedRoute>
+  )
 }
 
 // =====================================================
@@ -519,18 +530,18 @@ function App() {
       <Route
         path="/projects"
         element={
-          <ProtectedRoute>
+          <ProtectedLayout>
             <ProjectCatalogPage />
-          </ProtectedRoute>
+          </ProtectedLayout>
         }
       />
 
       <Route
         path="/projects/:id"
         element={
-          <ProtectedRoute>
+          <ProtectedLayout>
             <ProjectDetailsPage />
-          </ProtectedRoute>
+          </ProtectedLayout>
         }
       />
 
@@ -539,61 +550,62 @@ function App() {
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
+          <ProtectedLayout>
             <DashboardPage />
-          </ProtectedRoute>
+          </ProtectedLayout>
         }
       />
 
       <Route
         path="/profile"
         element={
-          <ProtectedRoute>
+          <ProtectedLayout>
             <ProfilePage />
-          </ProtectedRoute>
+          </ProtectedLayout>
         }
       />
 
       <Route
         path="/projects/new"
         element={
-          <ProtectedRoute>
+          <ProtectedLayout>
             <CreateProjectPage />
-          </ProtectedRoute>
+          </ProtectedLayout>
         }
       />
 
       <Route
         path="/projects/mine"
         element={
-          <ProtectedRoute>
+          <ProtectedLayout>
             <MyProjectsPage />
-          </ProtectedRoute>
+          </ProtectedLayout>
         }
       />
 
       <Route
         path="/projects/saved"
         element={
-          <ProtectedRoute>
+          <ProtectedLayout>
             <SavedProjectsPage />
-          </ProtectedRoute>
+          </ProtectedLayout>
         }
       />
 
       <Route
         path="/projects/:id/manage"
         element={
-          <ProtectedRoute>
+          <ProtectedLayout>
             <ProjectManagementPage />
-          </ProtectedRoute>
+          </ProtectedLayout>
         }
       />
+
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
 
       {/* Nezināmi maršruti */}
 
       <Route path="*" element={<Navigate to="/" replace />} />
-      <Route path="/verify-email" element={<VerifyEmailPage />} />
     </Routes>
   )
 }

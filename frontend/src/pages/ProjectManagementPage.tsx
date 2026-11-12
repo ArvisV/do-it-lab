@@ -2,12 +2,6 @@ import { useCallback, useEffect, useState } from 'react'
 import type { FormEvent, ChangeEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
-  House,
-  FolderSearch,
-  CirclePlus,
-  Bookmark,
-  Heart,
-  UserRound,
   Sprout,
   Eye,
   EyeOff,
@@ -31,7 +25,6 @@ import {
   Plus,
 } from 'lucide-react'
 
-import Logo from '../components/Logo'
 import './MyProjectsPage.css'
 import './ProjectManagementPage.css'
 
@@ -294,6 +287,7 @@ function ProjectManagementPage() {
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
   const [busy, setBusy] = useState(false)
+  const [coverImageVersion, setCoverImageVersion] = useState(0)
 
   const [activeTab, setActiveTab] = useState<EditorTab>('steps')
 
@@ -1191,6 +1185,7 @@ function ProjectManagementPage() {
       })
 
       await refreshProject()
+      setCoverImageVersion((current) => current + 1)
       showSuccess('Projekta titulbilde veiksmīgi atjaunota.')
     } catch (err) {
       showError(err)
@@ -1350,39 +1345,24 @@ function ProjectManagementPage() {
 
   const coverUrl =
     project?.imagePath && project.id
-      ? `${API_URL}/images/projects/${project.id}/cover`
+      ? `${API_URL}/images/projects/${project.id}/cover?v=${coverImageVersion}`
       : null
 
   if (loading) {
     return (
-      <div className="workspace-shell">
-        <aside className="workspace-sidebar">
-          <div className="workspace-logo">
-            <Logo />
-          </div>
-        </aside>
-
-        <main className="workspace-main">
-          <div className="editor-loading">
+      <div className="project-editor-content">
+        <div className="editor-loading">
             <span className="workspace-spinner" />
             <p>Ielādējam projekta darbnīcu...</p>
           </div>
-        </main>
       </div>
     )
   }
 
   if (error && !project) {
     return (
-      <div className="workspace-shell">
-        <aside className="workspace-sidebar">
-          <div className="workspace-logo">
-            <Logo />
-          </div>
-        </aside>
-
-        <main className="workspace-main">
-          <div className="editor-load-error">
+      <div className="project-editor-content">
+        <div className="editor-load-error">
             <h2>Projektu neizdevās atvērt</h2>
             <p>{error}</p>
 
@@ -1390,7 +1370,6 @@ function ProjectManagementPage() {
               Atpakaļ uz maniem projektiem
             </button>
           </div>
-        </main>
       </div>
     )
   }
@@ -1415,91 +1394,7 @@ function ProjectManagementPage() {
   ]
 
   return (
-    <div className="workspace-shell">
-      {/* KREISĀ NAVIGĀCIJA */}
-      <aside className="workspace-sidebar">
-        <div className="workspace-logo">
-          <Logo />
-        </div>
-
-        <nav
-          className="workspace-navigation"
-          aria-label="Lietotāja navigācija"
-        >
-          <button
-            className="workspace-nav-link"
-            onClick={() => navigate('/dashboard')}
-          >
-            <House />
-            <span>Sākums</span>
-          </button>
-
-          <button
-            className="workspace-nav-link"
-            onClick={() => navigate('/projects')}
-          >
-            <FolderSearch />
-            <span>Projektu katalogs</span>
-          </button>
-
-          <button
-            className="workspace-nav-link"
-            onClick={() => navigate('/projects/new')}
-          >
-            <CirclePlus />
-            <span>Izveidot projektu</span>
-          </button>
-
-          <button
-            className="workspace-nav-link active"
-            onClick={() => navigate('/projects/mine')}
-          >
-            <Bookmark />
-            <span>Mani projekti</span>
-          </button>
-
-          <button
-            className="workspace-nav-link"
-            onClick={() => navigate('/projects/saved')}
-          >
-            <Heart />
-            <span>Saglabātie</span>
-          </button>
-
-          <button
-            className="workspace-nav-link"
-            onClick={() => showSuccess('Profila sadaļu pievienosim vēlāk.')}
-          >
-            <UserRound />
-            <span>Profils</span>
-          </button>
-        </nav>
-
-        <div className="workspace-sidebar-bottom">
-          <div className="workspace-sidebar-decoration">
-            <Sprout size={27} strokeWidth={1.4} />
-            <p>
-              RADI.
-              <br />
-              MĀCIES.
-              <br />
-              DALIES.
-            </p>
-          </div>
-
-          <button
-            className="workspace-home-button"
-            onClick={() => navigate('/dashboard')}
-          >
-            <House size={18} />
-            Atpakaļ uz sākumu
-          </button>
-        </div>
-      </aside>
-
-      {/* GALVENĀ DAĻA */}
-      <main className="workspace-main">
-        <div className="project-editor-content">
+    <div className="project-editor-content">
           {/* PROJEKTA GALVENE */}
           <section className="editor-project-header">
             <div className="editor-project-heading">
@@ -2529,7 +2424,8 @@ function ProjectManagementPage() {
                                 {balance && balance.totalNeeded > 0 && (
                                   <>
                                     <p className="editor-material-linked">
-                                      Soļiem paredzēts: {formatQuantity(balance.totalNeeded)} {material.unit}
+                                      Nepieciešams projekta soļiem:{' '}
+                                      {formatQuantity(balance.totalNeeded)} {material.unit}
                                     </p>
 
                                     {balance.totalUsed > 0 && (
@@ -2538,23 +2434,18 @@ function ProjectManagementPage() {
                                       </p>
                                     )}
 
-                                    <p className="editor-material-linked">
-                                      Vēl nepieciešams: {formatQuantity(balance.remainingNeeded)} {material.unit}
+                                    <p
+                                      className="editor-material-linked"
+                                      style={{
+                                        color: balance.shortage > 0 ? '#a34f40' : '#477c59',
+                                        fontWeight: 700,
+                                      }}
+                                    >
+                                      {balance.shortage > 0
+                                        ? `Papildus jāiegādājas: ${formatQuantity(balance.shortage)} ${material.unit}`
+                                        : 'Materiālu pietiek projektam'}
                                     </p>
                                   </>
-                                )}
-
-                                {balance && balance.shortage > 0 && (
-                                  <p
-                                    style={{
-                                      margin: '8px 0 0',
-                                      color: '#a34f40',
-                                      fontSize: '12px',
-                                      fontWeight: 700,
-                                    }}
-                                  >
-                                    Trūkst: {formatQuantity(balance.shortage)} {material.unit}
-                                  </p>
                                 )}
                               </div>
                             </div>
@@ -3021,8 +2912,6 @@ function ProjectManagementPage() {
             Do It Lab — idejām, kas pelnījušas kļūt īstas.
           </footer>
         </div>
-      </main>
-    </div>
   )
 }
 

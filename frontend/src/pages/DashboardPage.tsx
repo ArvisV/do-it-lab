@@ -1,25 +1,18 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Logo from '../components/Logo'
-import './DashboardPage.css'
 import {
-  House,
-  Folder,
-  CirclePlus,
-  Bookmark,
-  Heart,
-  UserRound,
   Leaf,
   Sprout,
   Cpu,
   Palette,
   Hammer,
-  ChevronDown,
-  LogOut,
-  Settings,
+  House,
+  Folder,
   type LucideIcon,
 } from 'lucide-react'
+
+import './DashboardPage.css'
 
 const API_URL = 'http://localhost:5000/api'
 
@@ -27,7 +20,6 @@ type User = {
   id: string
   email: string
   displayName?: string | null
-  avatarPath?: string | null
 }
 
 type Category = {
@@ -42,12 +34,11 @@ type PublicProject = {
   imagePath: string | null
   createdAt: string
   category: Category | null
-  user: {
-    id: string
-    email: string
-    displayName?: string | null
-    avatarPath?: string | null
-  }
+  user?: {
+  id?: string
+  email?: string | null
+  displayName?: string | null
+} | null
   _count?: {
     steps: number
   }
@@ -62,11 +53,20 @@ const categoryIcons: Record<string, LucideIcon> = {
   'Citi projekti': Leaf,
 }
 
-function getDisplayName(user: {
-  email: string
-  displayName?: string | null
-}) {
-  return user.displayName?.trim() || 'Do It Lab lietotājs'
+function getAuthor(project: PublicProject) {
+  const displayName = project.user?.displayName?.trim()
+
+  if (displayName) {
+    return displayName
+  }
+
+  const email = project.user?.email?.trim()
+
+  if (email) {
+    return email.split('@')[0] || 'Do It Lab lietotājs'
+  }
+
+  return 'Do It Lab lietotājs'
 }
 
 function getProjectImageUrl(project: PublicProject) {
@@ -122,12 +122,10 @@ export default function DashboardPage() {
   const [projectsLoading, setProjectsLoading] = useState(true)
   const [projectsError, setProjectsError] = useState('')
 
-  const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] =
     useState('Visas kategorijas')
 
   const [notice, setNotice] = useState('')
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
 
   // Pārbauda lietotāja sesiju.
   useEffect(() => {
@@ -173,7 +171,7 @@ export default function DashboardPage() {
     }
   }, [navigate])
 
-  // Ielādē publiskos projektus un kategorijas.
+  // Ielādē publiskos projektus un kategorijas no datubāzes.
   useEffect(() => {
     let active = true
 
@@ -189,11 +187,15 @@ export default function DashboardPage() {
           ])
 
         if (!projectsResponse.ok) {
-          throw new Error('Neizdevās ielādēt publiskos projektus.')
+          throw new Error(
+            'Neizdevās ielādēt publiskos projektus.',
+          )
         }
 
         if (!categoriesResponse.ok) {
-          throw new Error('Neizdevās ielādēt projektu kategorijas.')
+          throw new Error(
+            'Neizdevās ielādēt projektu kategorijas.',
+          )
         }
 
         const projectsData = await projectsResponse.json()
@@ -248,46 +250,24 @@ export default function DashboardPage() {
     [categories],
   )
 
-  // Projektu meklēšana un filtrēšana.
+  // Projektu filtrēšana pēc izvēlētās kategorijas.
   const filteredProjects = useMemo(() => {
-    const query = search.trim().toLowerCase()
-
     return projects.filter((project) => {
       const categoryName = project.category?.name ?? ''
-      const authorName = getDisplayName(project.user)
 
-      const matchesCategory =
+      return (
         activeCategory === 'Visas kategorijas' ||
         categoryName === activeCategory
-
-      const matchesSearch =
-        !query ||
-        project.title.toLowerCase().includes(query) ||
-        project.description.toLowerCase().includes(query) ||
-        categoryName.toLowerCase().includes(query) ||
-        authorName.toLowerCase().includes(query)
-
-      return matchesCategory && matchesSearch
+      )
     })
-  }, [projects, search, activeCategory])
+  }, [projects, activeCategory])
 
-  // Dashboard rāda tikai 8 jaunākos atbilstošos projektus.
-  const displayedProjects = filteredProjects.slice(0, 8)
+  const displayName =
+    user?.displayName?.trim() ||
+    user?.email.split('@')[0] ||
+    'lietotāj'
 
-  async function handleLogout() {
-    try {
-      await fetch(`${API_URL}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      })
-    } finally {
-      navigate('/', { replace: true })
-    }
-  }
-
-  const displayName = user ? getDisplayName(user) : ''
-  const initial = displayName.charAt(0).toUpperCase() || 'L'
-
+  // Lietotāja ielādes laikā.
   if (loading) {
     return (
       <main className="dashboard-loading">
@@ -301,6 +281,7 @@ export default function DashboardPage() {
     return (
       <main className="dashboard-loading">
         <p>Neizdevās ielādēt lietotāja informāciju.</p>
+
         <button
           className="dashboard-primary-button"
           onClick={() => navigate('/login')}
@@ -312,357 +293,198 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="dashboard-shell">
-      <aside className="dashboard-sidebar">
-        <div className="dashboard-logo">
-          <Logo />
+    <div className="dashboard-content" id="sakums">
+      {notice && (
+        <div className="dashboard-notice" role="status">
+          <span>{notice}</span>
+
+          <button
+            onClick={() => setNotice('')}
+            aria-label="Aizvērt"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      <section className="welcome-banner">
+        <div className="welcome-copy">
+          <span className="dashboard-eyebrow">
+            Laipni lūgts!
+          </span>
+
+          <h1>Sveiks, {displayName}!</h1>
+
+          <p>
+            Iedvesmojies, veido un dalies ar savām idejām.
+          </p>
         </div>
 
-        <nav
-          className="dashboard-nav"
-          aria-label="Lietotāja navigācija"
+        <div
+          className="welcome-photo"
+          role="img"
+          aria-label="Mājīga radoša darba vieta ar krūzīti, augu un darbarīkiem"
         >
-          <button
-            className="dashboard-nav-link active"
-            onClick={() => navigate('/dashboard')}
-          >
-            <House className="nav-icon" />
-            <span>Sākums</span>
-          </button>
-
-          <button
-            className="dashboard-nav-link"
-            onClick={() => navigate('/projects')}
-          >
-            <Folder className="nav-icon" />
-            <span>Projektu katalogs</span>
-          </button>
-
-          <button
-            className="dashboard-nav-link"
-            onClick={() => navigate('/projects/new')}
-          >
-            <CirclePlus className="nav-icon" />
-            <span>Izveidot projektu</span>
-          </button>
-
-          <button
-            className="dashboard-nav-link"
-            onClick={() => navigate('/projects/mine')}
-          >
-            <Bookmark className="nav-icon" />
-            <span>Mani projekti</span>
-          </button>
-
-          <button
-            className="dashboard-nav-link"
-            onClick={() => navigate('/projects/saved')}
-          >
-            <Heart className="nav-icon" />
-            <span>Saglabātie</span>
-          </button>
-
-          <button
-            className="dashboard-nav-link"
-            onClick={() => navigate('/profile')}
-          >
-            <UserRound className="nav-icon" />
-            <span>Profils</span>
-          </button>
-
-        <div className="sidebar-bottom">
-          <div className="sidebar-motto">
-            RADI.
+          <div className="welcome-note">
+            Lielas idejas
             <br />
-            MĀCIES.
+            sākas ar
             <br />
-            DALIES.
+            mazām detaļām.
+            <span>〰</span>
           </div>
         </div>
-        </nav>
-      </aside>
+      </section>
 
-      <div className="dashboard-main">
-        <header className="dashboard-topbar">
-          <div className="dashboard-search">
-            <span aria-hidden="true">⌕</span>
+      <section className="dashboard-category-section">
+        <div
+          className="category-list"
+          aria-label="Projektu kategorijas"
+        >
+          {categoryFilters.map((category) => {
+            const CategoryIcon = category.icon
 
-            <input
-              type="search"
-              aria-label="Meklēt projektus"
-              placeholder="Meklēt projektus..."
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-
-            {search && (
+            return (
               <button
-                type="button"
-                className="clear-search"
-                aria-label="Notīrīt meklēšanu"
-                onClick={() => setSearch('')}
+                key={category.name}
+                className={`category-button ${
+                  activeCategory === category.name
+                    ? 'selected'
+                    : ''
+                }`}
+                onClick={() =>
+                  setActiveCategory(category.name)
+                }
+                aria-pressed={
+                  activeCategory === category.name
+                }
               >
-                ×
+                <CategoryIcon className="category-icon" />
+                <span>{category.name}</span>
               </button>
-            )}
+            )
+          })}
+        </div>
+
+        <button
+          className="dashboard-primary-button create-project-button"
+          onClick={() => navigate('/projects/new')}
+        >
+          <span>＋</span> Izveidot projektu
+        </button>
+      </section>
+
+      <section className="dashboard-projects" id="projekti">
+        <div className="dashboard-section-heading">
+          <div>
+            <span className="dashboard-eyebrow">
+              Atrodi iedvesmu
+            </span>
+
+            <h2>
+              {activeCategory !== 'Visas kategorijas'
+                ? 'Atrasti projekti'
+                : 'Jaunākie projekti'}
+            </h2>
           </div>
 
-          <div className="dashboard-profile-wrapper">
+          <span className="project-count">
+            {filteredProjects.length}{' '}
+            {filteredProjects.length === 1
+              ? 'projekts'
+              : 'projekti'}
+          </span>
+        </div>
+
+        {projectsLoading ? (
+          <div className="dashboard-empty">
+            <span className="loading-spinner" />
+            <p>Ielādē publiskos projektus...</p>
+          </div>
+        ) : projectsError ? (
+          <div className="dashboard-empty" role="alert">
+            <h3>Neizdevās ielādēt projektus</h3>
+            <p>{projectsError}</p>
+
             <button
-              type="button"
-              className="dashboard-user"
-              onClick={() => setProfileMenuOpen((open) => !open)}
-              aria-expanded={profileMenuOpen}
-              aria-haspopup="true"
-              title="Atvērt profila izvēlni"
+              className="dashboard-secondary-button"
+              onClick={() => window.location.reload()}
             >
-              <span className="user-avatar">{initial}</span>
-              <span className="user-name">{displayName}</span>
-              <ChevronDown size={16} />
+              Mēģināt vēlreiz
             </button>
+          </div>
+        ) : filteredProjects.length > 0 ? (
+          <div className="dashboard-project-grid">
+            {filteredProjects.slice(0, 8).map((project) => {
+              const authorName = getAuthor(project)
 
-            {profileMenuOpen && (
-              <div className="profile-dropdown">
-                <div className="profile-dropdown-info">
-                  <span className="profile-dropdown-avatar">
-                    {initial}
-                  </span>
-
-                  <div className="profile-dropdown-text">
-                    <strong>{displayName}</strong>
-                    <span>Do it Lab dalībnieks</span>
+              return (
+                <article
+                  className="dashboard-project-card"
+                  key={project.id}
+                >
+                  <div className="dashboard-project-image">
+                    <DashboardProjectImage project={project} />
                   </div>
-                </div>
 
-                <div className="profile-dropdown-divider" />
+                  <div className="dashboard-project-info">
+                    <span className="dashboard-project-category">
+                      {project.category?.name ??
+                        'Bez kategorijas'}
+                    </span>
 
-                <button
-                  type="button"
-                  className="profile-dropdown-item"
-                  onClick={() => {
-                    setProfileMenuOpen(false)
-                    navigate('/profile')
-                  }}
-                >
-                  <Settings size={17} />
-                  Profila iestatījumi
-                </button>
+                    <h3>{project.title}</h3>
 
-                <button
-                  type="button"
-                  className="profile-dropdown-item logout"
-                  onClick={handleLogout}
-                >
-                  <LogOut size={17} />
-                  Izrakstīties
-                </button>
-              </div>
+                    <p className="dashboard-project-description">
+                      {project.description}
+                    </p>
+
+                    <div className="dashboard-project-footer">
+                      <span className="project-author">
+                        <span className="author-avatar">
+                          {authorName.charAt(0).toUpperCase()}
+                        </span>
+                        {authorName}
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="dashboard-empty">
+            <span>⌕</span>
+
+            <h3>
+              {projects.length === 0
+                ? 'Pagaidām nav publicētu projektu'
+                : 'Šajā kategorijā projektu nav'}
+            </h3>
+
+            <p>
+              {projects.length === 0
+                ? 'Kad lietotāji publicēs projektus, tie būs redzami šeit.'
+                : 'Izvēlies citu kategoriju, lai apskatītu citus projektus.'}
+            </p>
+
+            {activeCategory !== 'Visas kategorijas' && (
+              <button
+                className="dashboard-secondary-button"
+                onClick={() =>
+                  setActiveCategory('Visas kategorijas')
+                }
+              >
+                Rādīt visus projektus
+              </button>
             )}
           </div>
-        </header>
+        )}
+      </section>
 
-        <main id="sakums" className="dashboard-content">
-          {notice && (
-            <div className="dashboard-notice" role="status">
-              <span>{notice}</span>
-              <button
-                onClick={() => setNotice('')}
-                aria-label="Aizvērt"
-              >
-                ×
-              </button>
-            </div>
-          )}
-
-          <section className="welcome-banner">
-            <div className="welcome-copy">
-              <span className="dashboard-eyebrow">
-                Laipni lūgts!
-              </span>
-
-              <h1>Sveiks, {displayName}!</h1>
-
-              <p>
-                Iedvesmojies, veido un dalies ar savām idejām.
-              </p>
-            </div>
-
-            <div
-              className="welcome-photo"
-              role="img"
-              aria-label="Mājīga radoša darba vieta ar krūzīti, augu un darbarīkiem"
-            >
-              <div className="welcome-note">
-                Lielas idejas
-                <br />
-                sākas ar
-                <br />
-                mazām detaļām.
-                <span>〰</span>
-              </div>
-            </div>
-          </section>
-
-          <section className="dashboard-category-section">
-            <div
-              className="category-list"
-              aria-label="Projektu kategorijas"
-            >
-              {categoryFilters.map((category) => {
-                const CategoryIcon = category.icon
-
-                return (
-                  <button
-                    key={category.name}
-                    className={`category-button ${
-                      activeCategory === category.name
-                        ? 'selected'
-                        : ''
-                    }`}
-                    onClick={() => setActiveCategory(category.name)}
-                    aria-pressed={activeCategory === category.name}
-                  >
-                    <CategoryIcon className="category-icon" />
-                    <span>{category.name}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </section>
-
-          <section className="dashboard-projects" id="projekti">
-            <div className="dashboard-section-heading">
-              <div>
-                <span className="dashboard-eyebrow">
-                  Atrodi iedvesmu
-                </span>
-
-                <h2>
-                  {search ||
-                  activeCategory !== 'Visas kategorijas'
-                    ? 'Atrasti projekti'
-                    : 'Jaunākie projekti'}
-                </h2>
-              </div>
-
-              <span className="project-count">
-                {displayedProjects.length}
-                {filteredProjects.length > 8
-                  ? ` no ${filteredProjects.length}`
-                  : ''}{' '}
-                {displayedProjects.length === 1
-                  ? 'projekts'
-                  : 'projekti'}
-              </span>
-            </div>
-
-            {projectsLoading ? (
-              <div className="dashboard-empty">
-                <span className="loading-spinner" />
-                <p>Ielādē publiskos projektus...</p>
-              </div>
-            ) : projectsError ? (
-              <div className="dashboard-empty" role="alert">
-                <h3>Neizdevās ielādēt projektus</h3>
-                <p>{projectsError}</p>
-
-                <button
-                  className="dashboard-secondary-button"
-                  onClick={() => window.location.reload()}
-                >
-                  Mēģināt vēlreiz
-                </button>
-              </div>
-            ) : displayedProjects.length > 0 ? (
-              <>
-                <div className="dashboard-project-grid">
-                  {displayedProjects.map((project) => {
-                    const authorName = getDisplayName(project.user)
-
-                    return (
-                      <article
-                        className="dashboard-project-card"
-                        key={project.id}
-                      >
-                        <div className="dashboard-project-image">
-                          <DashboardProjectImage project={project} />
-                        </div>
-
-                        <div className="dashboard-project-info">
-                          <span className="dashboard-project-category">
-                            {project.category?.name ?? 'Bez kategorijas'}
-                          </span>
-
-                          <h3>{project.title}</h3>
-
-                          <p className="dashboard-project-description">
-                            {project.description}
-                          </p>
-
-                          <div className="dashboard-project-footer">
-                            <span className="project-author">
-                              <span className="author-avatar">
-                                {authorName.charAt(0).toUpperCase()}
-                              </span>
-                              {authorName}
-                            </span>
-                          </div>
-                        </div>
-                      </article>
-                    )
-                  })}
-                </div>
-
-                {!search &&
-                  activeCategory === 'Visas kategorijas' &&
-                  filteredProjects.length > 8 && (
-                    <div className="dashboard-catalog-link">
-                      <button
-                        className="dashboard-secondary-button"
-                        onClick={() => navigate('/projects')}
-                      >
-                        Apskatīt visus projektus
-                      </button>
-                    </div>
-                  )}
-              </>
-            ) : (
-              <div className="dashboard-empty">
-                <span>⌕</span>
-
-                <h3>
-                  {projects.length === 0
-                    ? 'Pagaidām nav publicētu projektu'
-                    : 'Projektus neizdevās atrast'}
-                </h3>
-
-                <p>
-                  {projects.length === 0
-                    ? 'Kad lietotāji publicēs projektus, tie būs redzami šeit.'
-                    : 'Pamēģini citu meklēšanas vārdu vai kategoriju.'}
-                </p>
-
-                {(search ||
-                  activeCategory !== 'Visas kategorijas') && (
-                  <button
-                    className="dashboard-secondary-button"
-                    onClick={() => {
-                      setSearch('')
-                      setActiveCategory('Visas kategorijas')
-                    }}
-                  >
-                    Rādīt visus projektus
-                  </button>
-                )}
-              </div>
-            )}
-          </section>
-
-          <footer className="dashboard-footer">
-            Do It Lab — idejām, kas pelnījušas kļūt īstas.
-          </footer>
-        </main>
-      </div>
+      <footer className="dashboard-footer">
+        Do It Lab — idejām, kas pelnījušas kļūt īstas.
+      </footer>
     </div>
   )
 }

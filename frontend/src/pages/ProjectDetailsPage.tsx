@@ -6,7 +6,6 @@ import {
   Bookmark,
   CalendarDays,
   CheckCircle2,
-  ChevronDown,
   FolderOpen,
   Image as ImageIcon,
   Images,
@@ -14,13 +13,10 @@ import {
   LockKeyhole,
   ListOrdered,
   Package,
-  Settings,
-  LogOut,
   UserRound,
   X,
 } from 'lucide-react'
 
-import Logo from '../components/Logo'
 import './ProjectDetailsPage.css'
 import './ProjectDetailsPage.gallery.css'
 
@@ -180,10 +176,6 @@ function PublicStepImage({
   )
 }
 
-function getUserDisplayName(user: AuthUser | null) {
-  return user?.displayName?.trim() || 'Do It Lab lietotājs'
-}
-
 function GalleryImageThumbnail({
   image,
   onOpen,
@@ -236,12 +228,12 @@ function ProjectDetailsPage() {
 
   const [authUser, setAuthUser] = useState<AuthUser | null>(null)
   const [authChecking, setAuthChecking] = useState(true)
+  const [authenticationRequired, setAuthenticationRequired] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [favoriteSaving, setFavoriteSaving] = useState(false)
   const [favoriteMessage, setFavoriteMessage] = useState('')
   const [favoriteError, setFavoriteError] = useState('')
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
   const [selectedGalleryImage, setSelectedGalleryImage] =
     useState<ProjectGalleryImage | null>(null)
 
@@ -343,6 +335,7 @@ function ProjectDetailsPage() {
         // Lietotājs nav ielogojies.
         if (authResponse.status === 401) {
           setAuthUser(null)
+          setAuthenticationRequired(true)
           return
         }
 
@@ -369,6 +362,7 @@ function ProjectDetailsPage() {
         if (favoriteResponse.status === 401) {
           setAuthUser(null)
           setIsSaved(false)
+          setAuthenticationRequired(true)
           return
         }
 
@@ -401,6 +395,16 @@ function ProjectDetailsPage() {
 
     return () => controller.abort()
   }, [id])
+
+  // Neautorizētiem lietotājiem projekta saturs nav pieejams.
+  useEffect(() => {
+    if (!authChecking && authenticationRequired && id) {
+      const returnPath = `/projects/${id}`
+      navigate(`/login?returnTo=${encodeURIComponent(returnPath)}`, {
+        replace: true,
+      })
+    }
+  }, [authChecking, authenticationRequired, id, navigate])
 
   // Pievieno vai noņem projektu no favorītiem.
   async function toggleSaved() {
@@ -464,16 +468,30 @@ function ProjectDetailsPage() {
     }
   }
 
-  // Izrakstīšanās no lietotāja konta.
-  async function handleLogout() {
-    try {
-      await fetch(`${API_URL}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      })
-    } finally {
-      navigate('/', { replace: true })
-    }
+
+  // Neparādām projekta saturu, kamēr nav apstiprināta lietotāja sesija.
+  if (authChecking || authenticationRequired || !authUser) {
+    return (
+      <div className="public-detail-state">
+        <div className="public-detail-state-icon">
+          <LockKeyhole size={34} />
+        </div>
+        <h2>
+          {authenticationRequired
+            ? 'Nepieciešams pieteikties'
+            : authChecking
+              ? 'Pārbaudām piekļuvi...'
+              : 'Neizdevās pārbaudīt piekļuvi'}
+        </h2>
+        <p>
+          {authenticationRequired
+            ? 'Novirzām uz pieteikšanās lapu.'
+            : authChecking
+              ? 'Lūdzu, uzgaidi.'
+              : favoriteError || 'Lai apskatītu projektu, nepieciešama aktīva lietotāja sesija.'}
+        </p>
+      </div>
+    )
   }
 
   // Ielādes ekrāns.
@@ -516,8 +534,6 @@ function ProjectDetailsPage() {
   }
 
   const authorName = getAuthorName(project)
-  const profileName = getUserDisplayName(authUser)
-  const profileInitial = profileName.charAt(0).toUpperCase() || 'L'
   const galleryImages = project.galleryImages ?? []
 
   const returnPath = `/projects/${project.id}`
@@ -527,77 +543,6 @@ function ProjectDetailsPage() {
 
   return (
     <div className="public-detail-page">
-      <header className="public-detail-header">
-        <div className="public-detail-header-inner">
-          <Logo />
-
-          <div className="public-detail-header-actions">
-            <Link
-              to="/projects"
-              className="public-detail-back-link"
-            >
-              <ArrowLeft size={18} />
-              <span>Projektu katalogs</span>
-            </Link>
-
-            <div className="public-detail-profile-wrapper">
-              <button
-                type="button"
-                className="public-detail-user-button"
-                onClick={() => setProfileMenuOpen((open) => !open)}
-                aria-expanded={profileMenuOpen}
-                aria-haspopup="true"
-                title="Atvērt profila izvēlni"
-              >
-                <span className="public-detail-user-avatar">
-                  {profileInitial}
-                </span>
-                <span className="public-detail-user-name">
-                  {profileName}
-                </span>
-                <ChevronDown size={16} />
-              </button>
-
-              {profileMenuOpen && (
-                <div className="public-detail-profile-dropdown">
-                  <div className="public-detail-profile-dropdown-info">
-                    <span className="public-detail-profile-dropdown-avatar">
-                      {profileInitial}
-                    </span>
-                    <div className="public-detail-profile-dropdown-text">
-                      <strong>{profileName}</strong>
-                      <span>Do It Lab dalībnieks</span>
-                    </div>
-                  </div>
-
-                  <div className="public-detail-profile-dropdown-divider" />
-
-                  <button
-                    type="button"
-                    className="public-detail-profile-dropdown-item"
-                    onClick={() => {
-                      setProfileMenuOpen(false)
-                      navigate('/profile')
-                    }}
-                  >
-                    <Settings size={17} />
-                    Profila iestatījumi
-                  </button>
-
-                  <button
-                    type="button"
-                    className="public-detail-profile-dropdown-item logout"
-                    onClick={handleLogout}
-                  >
-                    <LogOut size={17} />
-                    Izrakstīties
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
 
       <main className="public-detail-main">
         <div className="public-detail-breadcrumb">

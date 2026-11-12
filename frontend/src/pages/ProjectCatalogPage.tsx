@@ -1,12 +1,9 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Logo from '../components/Logo'
 import {
   House,
   FolderSearch,
-  CirclePlus,
-  Bookmark,
   Heart,
   UserRound,
   Leaf,
@@ -367,11 +364,6 @@ export default function ProjectCatalogPage() {
     }
   }
 
-  function handleProfile() {
-    setNotice('Profila lapu pievienosim nākamajā izstrādes solī.')
-    setNoticeIsError(false)
-  }
-
   function openRegister() {
     navigate(
       `/register?returnTo=${encodeURIComponent('/projects')}`,
@@ -385,94 +377,9 @@ export default function ProjectCatalogPage() {
   }
 
   return (
-    <div className="catalog-shell">
-      <aside className="catalog-sidebar">
-        <div className="catalog-logo">
-          <Logo />
-        </div>
-
-        <nav
-          className="catalog-nav"
-          aria-label="Lietotāja navigācija"
-        >
-          <button
-            className="catalog-nav-link"
-            onClick={() => navigate('/dashboard')}
-          >
-            <House className="catalog-nav-icon" />
-            <span>Sākums</span>
-          </button>
-
-          <button
-            className="catalog-nav-link active"
-            onClick={() => navigate('/projects')}
-          >
-            <FolderSearch className="catalog-nav-icon" />
-            <span>Projektu katalogs</span>
-          </button>
-
-          <button
-            className="catalog-nav-link"
-            onClick={() => navigate('/projects/new')}
-          >
-            <CirclePlus className="catalog-nav-icon" />
-            <span>Izveidot projektu</span>
-          </button>
-
-          <button
-            className="catalog-nav-link"
-            onClick={() => navigate('/projects/mine')}
-          >
-            <Bookmark className="catalog-nav-icon" />
-            <span>Mani projekti</span>
-          </button>
-
-          <button
-            className="catalog-nav-link"
-            onClick={() => navigate('/projects/saved')}
-          >
-            <Heart className="catalog-nav-icon" />
-            <span>Saglabātie</span>
-          </button>
-
-          <button
-            className="catalog-nav-link"
-            onClick={handleProfile}
-          >
-            <UserRound className="catalog-nav-icon" />
-            <span>Profils</span>
-          </button>
-        </nav>
-
-        <div className="catalog-sidebar-bottom">
-          <div className="catalog-sidebar-motto">
-            RADI.
-            <br />
-            MĀCIES.
-            <br />
-            DALIES.
-          </div>
-
-          <button
-            className="catalog-logout-button"
-            onClick={() => navigate('/dashboard')}
-          >
-            <House size={19} />
-            Atpakaļ uz sākumu
-          </button>
-        </div>
-      </aside>
-
+    <>
       <main className="catalog-main">
         <header className="catalog-topbar">
-          <button
-            className="catalog-back-button"
-            onClick={() => navigate('/dashboard')}
-          >
-            <House size={18} />
-            Sākums
-          </button>
-
           <label className="catalog-search">
             <Search size={20} aria-hidden="true" />
 
@@ -748,6 +655,6 @@ export default function ProjectCatalogPage() {
           </section>
         </div>
       )}
-    </div>
+    </>
   )
 }

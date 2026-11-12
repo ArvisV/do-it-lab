@@ -1,3 +1,13 @@
+/* Saglabāto projektu lapa kopīgajā AppLayout izkārtojumā. */
+
+.catalog-main.saved-projects-main {
+  width: min(1440px, 100%);
+  min-width: 0;
+  margin: 0 auto;
+  padding: 0 0 28px;
+  color: var(--catalog-text, #202a28);
+}
+
 .saved-page-heading {
   margin-bottom: 34px;
 }
@@ -10,13 +20,18 @@
   margin-top: 10px;
 }
 
+.saved-page-title-row > div:first-child {
+  min-width: 0;
+}
+
 .saved-page-title-row h1 {
   margin: 0;
   color: #293e32;
   font-family: 'Manrope', sans-serif;
-  font-size: clamp(26px, 3vw, 34px);
+  font-size: clamp(28px, 3vw, 38px);
   font-weight: 800;
   letter-spacing: -0.8px;
+  line-height: 1.2;
 }
 
 .saved-page-title-row p {
@@ -31,6 +46,7 @@
   min-width: 64px;
   height: 54px;
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   gap: 9px;
@@ -72,6 +88,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .saved-project-image-link .catalog-image-placeholder {
@@ -114,13 +131,40 @@
   gap: 8px;
 }
 
-@media (max-width: 600px) {
+.saved-projects-main .catalog-notice {
+  margin: 0 0 20px;
+}
+
+.saved-projects-main .catalog-project-grid {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .saved-page-heading {
+    margin-bottom: 28px;
+  }
+}
+
+@media (max-width: 650px) {
+  .catalog-main.saved-projects-main {
+    padding-bottom: 20px;
+  }
+
+  .saved-page-heading {
+    margin-bottom: 25px;
+  }
+
   .saved-page-title-row {
     align-items: flex-start;
+    gap: 12px;
   }
 
   .saved-page-title-row h1 {
     font-size: 26px;
+  }
+
+  .saved-page-title-row p {
+    font-size: 13px;
   }
 
   .saved-page-count {
@@ -129,7 +173,28 @@
     padding: 0 12px;
   }
 
+  .saved-page-results-heading {
+    align-items: flex-end;
+    margin-top: 28px;
+  }
+
   .saved-page-results-heading h2 {
     font-size: 19px;
+  }
+}
+
+@media (max-width: 420px) {
+  .saved-page-title-row {
+    flex-direction: column;
+  }
+
+  .saved-page-count {
+    height: 42px;
+  }
+
+  .saved-page-results-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
   }
 }

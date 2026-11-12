@@ -1,36 +1,23 @@
-
-
 /* =========================================
 
    DO IT LAB — PROJECT MANAGEMENT
 
    ========================================= */
 
-
-
 .project-editor-content {
 
   width: min(1550px, 100%);
-
   margin: 0 auto;
-
-  padding: 34px 38px 30px;
-
+  padding: 0;
   color: #304438;
-
   font-family: 'DM Sans', sans-serif;
-
 }
-
-
 
 /* =========================================
 
    PROJECT HEADER
 
    ========================================= */
-
-
 
 .editor-project-header {
 
@@ -56,15 +43,11 @@
 
 }
 
-
-
 .editor-project-heading {
 
   min-width: 0;
 
 }
-
-
 
 .editor-project-heading h1 {
 
@@ -86,8 +69,6 @@
 
 }
 
-
-
 .editor-project-heading > p {
 
   max-width: 650px;
@@ -102,8 +83,6 @@
 
 }
 
-
-
 .editor-project-badges {
 
   display: flex;
@@ -115,8 +94,6 @@
   margin-top: 17px;
 
 }
-
-
 
 .editor-badge {
 
@@ -138,8 +115,6 @@
 
 }
 
-
-
 .badge-public {
 
   background: #e0f0e2;
@@ -147,8 +122,6 @@
   color: #3b7449;
 
 }
-
-
 
 .badge-private {
 
@@ -158,8 +131,6 @@
 
 }
 
-
-
 .badge-completed {
 
   background: #e1f0e4;
@@ -168,8 +139,6 @@
 
 }
 
-
-
 .badge-progress {
 
   background: #f1f0e8;
@@ -177,8 +146,6 @@
   color: #7e8062;
 
 }
-
-
 
 .editor-cover-frame {
 
@@ -198,8 +165,6 @@
 
 }
 
-
-
 .editor-cover-image {
 
   display: block;
@@ -213,8 +178,6 @@
   object-position: center;
 
 }
-
-
 
 .editor-cover-empty {
 
@@ -240,15 +203,11 @@
 
 }
 
-
-
 /* =========================================
 
    NOTICES
 
    ========================================= */
-
-
 
 .editor-notice,
 
@@ -272,8 +231,6 @@
 
 }
 
-
-
 .editor-notice {
 
   border: 1px solid #dce9d9;
@@ -284,8 +241,6 @@
 
 }
 
-
-
 .editor-error {
 
   border: 1px solid #efd8d3;
@@ -295,8 +250,6 @@
   color: #a34c40;
 
 }
-
-
 
 .editor-notice button,
 
@@ -316,15 +269,11 @@
 
 }
 
-
-
 /* =========================================
 
    MAIN LAYOUT
 
    ========================================= */
-
-
 
 .editor-layout {
 
@@ -340,15 +289,11 @@
 
 }
 
-
-
 .editor-main-column {
 
   min-width: 0;
 
 }
-
-
 
 .editor-section {
 
@@ -356,15 +301,11 @@
 
 }
 
-
-
 /* =========================================
 
    TABS
 
    ========================================= */
-
-
 
 .editor-tabs {
 
@@ -387,8 +328,6 @@
   box-shadow: 0 4px 15px rgba(48, 65, 49, 0.025);
 
 }
-
-
 
 .editor-tab {
 
@@ -424,11 +363,9 @@
 
   cursor: pointer;
 
-  transition: *background* 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 
 }
-
-
 
 .editor-tab:hover {
 
@@ -438,8 +375,6 @@
 
 }
 
-
-
 .editor-tab.active {
 
   background: #e9f1e6;
@@ -448,15 +383,11 @@
 
 }
 
-
-
 /* =========================================
 
    SECTION HEADING
 
    ========================================= */
-
-
 
 .editor-section-heading {
 
@@ -471,8 +402,6 @@
   margin: 4px 0 20px;
 
 }
-
-
 
 .editor-section-heading h2 {
 
@@ -490,8 +419,6 @@
 
 }
 
-
-
 .editor-section-heading p {
 
   max-width: 620px;
@@ -506,15 +433,11 @@
 
 }
 
-
-
 /* =========================================
 
    BUTTONS
 
    ========================================= */
-
-
 
 .editor-primary-button,
 
@@ -544,11 +467,9 @@
 
   cursor: pointer;
 
-  transition: *background* 0.2s ease, border-color 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease;
 
 }
-
-
 
 .editor-primary-button {
 
@@ -560,8 +481,6 @@
 
 }
 
-
-
 .editor-primary-button:hover {
 
   border-color: #2b573b;
@@ -569,8 +488,6 @@
   background: #2b573b;
 
 }
-
-
 
 .editor-secondary-button {
 
@@ -582,8 +499,6 @@
 
 }
 
-
-
 .editor-secondary-button:hover {
 
   background: #f0f5ed;
@@ -591,8 +506,6 @@
   border-color: #cbdcc7;
 
 }
-
-
 
 .editor-primary-button:disabled,
 
@@ -603,8 +516,6 @@
   cursor: wait;
 
 }
-
-
 
 .editor-small-button {
 
@@ -636,11 +547,9 @@
 
   cursor: pointer;
 
-  transition: *background* 0.2s ease;
+  transition: background 0.2s ease;
 
 }
-
-
 
 .editor-small-button:hover {
 
@@ -648,15 +557,11 @@
 
 }
 
-
-
 .editor-small-button.danger {
 
   color: #a66c61;
 
 }
-
-
 
 .editor-small-button.danger:hover {
 
@@ -666,8 +571,6 @@
 
 }
 
-
-
 .editor-small-button:disabled {
 
   opacity: 0.5;
@@ -675,8 +578,6 @@
   cursor: wait;
 
 }
-
-
 
 .editor-icon-button {
 
@@ -702,23 +603,17 @@
 
 }
 
-
-
 .editor-icon-button:hover {
 
   background: #f2f5ef;
 
 }
 
-
-
 /* =========================================
 
    STEP FORM
 
    ========================================= */
-
-
 
 .editor-step-form {
 
@@ -736,8 +631,6 @@
 
 }
 
-
-
 .editor-form-heading {
 
   display: flex;
@@ -751,8 +644,6 @@
   margin-bottom: 20px;
 
 }
-
-
 
 .editor-form-heading h3 {
 
@@ -768,8 +659,6 @@
 
 }
 
-
-
 .editor-field {
 
   display: flex;
@@ -782,8 +671,6 @@
 
 }
 
-
-
 .editor-field > span {
 
   color: #526b57;
@@ -793,8 +680,6 @@
   font-weight: 700;
 
 }
-
-
 
 .editor-field input,
 
@@ -828,8 +713,6 @@
 
 }
 
-
-
 .editor-field input:focus,
 
 .editor-field textarea:focus,
@@ -842,8 +725,6 @@
 
 }
 
-
-
 .editor-field textarea {
 
   min-height: 105px;
@@ -852,8 +733,6 @@
 
 }
 
-
-
 .editor-field input::placeholder,
 
 .editor-field textarea::placeholder {
@@ -861,8 +740,6 @@
   color: #a0aaa0;
 
 }
-
-
 
 .editor-form-actions {
 
@@ -878,15 +755,11 @@
 
 }
 
-
-
 /* =========================================
 
    STEP LIST
 
    ========================================= */
-
-
 
 .editor-step-list {
 
@@ -897,8 +770,6 @@
   gap: 15px;
 
 }
-
-
 
 .editor-step-card {
 
@@ -924,8 +795,6 @@
 
 }
 
-
-
 .editor-step-card:hover {
 
   border-color: #d9e5d5;
@@ -933,8 +802,6 @@
   box-shadow: 0 8px 22px rgba(48, 65, 49, 0.055);
 
 }
-
-
 
 .editor-step-number {
 
@@ -964,8 +831,6 @@
 
 }
 
-
-
 .editor-step-image {
 
   width: 145px;
@@ -980,8 +845,6 @@
 
 }
 
-
-
 .editor-step-photo {
 
   display: block;
@@ -995,8 +858,6 @@
   object-position: center;
 
 }
-
-
 
 .editor-step-image-empty {
 
@@ -1022,8 +883,6 @@
 
 }
 
-
-
 .editor-image-fallback {
 
   display: flex;
@@ -1048,8 +907,6 @@
 
 }
 
-
-
 .editor-image-loading {
 
   width: 22px;
@@ -1066,8 +923,6 @@
 
 }
 
-
-
 @keyframes editor-spin {
 
   to {
@@ -1078,15 +933,11 @@
 
 }
 
-
-
 .editor-step-information {
 
   min-width: 0;
 
 }
-
-
 
 .editor-step-title-row {
 
@@ -1100,8 +951,6 @@
 
 }
 
-
-
 .editor-step-label {
 
   color: #8ba087;
@@ -1113,8 +962,6 @@
   letter-spacing: 1.2px;
 
 }
-
-
 
 .editor-step-title-row h3 {
 
@@ -1134,8 +981,6 @@
 
 }
 
-
-
 .editor-step-information > p {
 
   margin: 0;
@@ -1152,8 +997,6 @@
 
 }
 
-
-
 .editor-step-order {
 
   display: flex;
@@ -1163,8 +1006,6 @@
   flex-shrink: 0;
 
 }
-
-
 
 .editor-step-order button {
 
@@ -1190,15 +1031,11 @@
 
 }
 
-
-
 .editor-step-order button:hover:not(:disabled) {
 
   background: #edf3e9;
 
 }
-
-
 
 .editor-step-order button:disabled {
 
@@ -1207,8 +1044,6 @@
   cursor: not-allowed;
 
 }
-
-
 
 .editor-step-materials {
 
@@ -1224,8 +1059,6 @@
 
 }
 
-
-
 .editor-step-materials > span:first-child {
 
   color: #89968a;
@@ -1235,8 +1068,6 @@
   font-weight: 700;
 
 }
-
-
 
 .editor-material-chip {
 
@@ -1256,8 +1087,6 @@
 
 }
 
-
-
 .editor-step-actions {
 
   display: flex;
@@ -1270,23 +1099,17 @@
 
 }
 
-
-
 .editor-step-actions label {
 
   cursor: pointer;
 
 }
 
-
-
 /* =========================================
 
    EMPTY STATES
 
    ========================================= */
-
-
 
 .editor-empty-state,
 
@@ -1314,8 +1137,6 @@
 
 }
 
-
-
 .editor-empty-icon {
 
   width: 66px;
@@ -1336,8 +1157,6 @@
 
 }
 
-
-
 .editor-empty-state h3,
 
 .editor-coming-soon h3 {
@@ -1353,8 +1172,6 @@
   font-weight: 800;
 
 }
-
-
 
 .editor-empty-state p,
 
@@ -1372,15 +1189,11 @@
 
 }
 
-
-
 /* =========================================
 
    RIGHT SIDE PANEL
 
    ========================================= */
-
-
 
 .editor-aside {
 
@@ -1396,8 +1209,6 @@
 
 }
 
-
-
 .editor-side-card {
 
   padding: 18px;
@@ -1412,8 +1223,6 @@
 
 }
 
-
-
 .editor-side-heading {
 
   display: flex;
@@ -1423,8 +1232,6 @@
   gap: 11px;
 
 }
-
-
 
 .editor-side-icon {
 
@@ -1448,8 +1255,6 @@
 
 }
 
-
-
 .editor-side-icon.completion {
 
   background: #eaf3e9;
@@ -1458,8 +1263,6 @@
 
 }
 
-
-
 .editor-side-icon.summary {
 
   background: #f0f1e9;
@@ -1467,8 +1270,6 @@
   color: #7d8967;
 
 }
-
-
 
 .editor-side-heading h3 {
 
@@ -1484,8 +1285,6 @@
 
 }
 
-
-
 .editor-side-heading span {
 
   display: block;
@@ -1497,8 +1296,6 @@
   line-height: 1.5;
 
 }
-
-
 
 .editor-side-status {
 
@@ -1516,8 +1313,6 @@
 
 }
 
-
-
 .editor-side-status.public,
 
 .editor-side-status.completed {
@@ -1528,8 +1323,6 @@
 
 }
 
-
-
 .editor-side-status.private {
 
   background: #f5f0e7;
@@ -1538,8 +1331,6 @@
 
 }
 
-
-
 .editor-side-status.progress {
 
   background: #f1f2e9;
@@ -1547,8 +1338,6 @@
   color: #7b8466;
 
 }
-
-
 
 .editor-side-description {
 
@@ -1562,8 +1351,6 @@
 
 }
 
-
-
 .editor-completed-date {
 
   margin: 10px 0 0;
@@ -1575,8 +1362,6 @@
   font-weight: 700;
 
 }
-
-
 
 .editor-side-button {
 
@@ -1604,11 +1389,9 @@
 
   cursor: pointer;
 
-  transition: *background* 0.2s ease;
+  transition: background 0.2s ease;
 
 }
-
-
 
 .editor-side-button.primary {
 
@@ -1620,15 +1403,11 @@
 
 }
 
-
-
 .editor-side-button.primary:hover {
 
   background: #2b573b;
 
 }
-
-
 
 .editor-side-button.secondary {
 
@@ -1640,15 +1419,11 @@
 
 }
 
-
-
 .editor-side-button.secondary:hover {
 
   background: #f1f5ee;
 
 }
-
-
 
 .editor-side-button:disabled {
 
@@ -1658,23 +1433,17 @@
 
 }
 
-
-
 /* =========================================
 
    PROJECT SUMMARY
 
    ========================================= */
 
-
-
 .editor-summary-card {
 
   padding-bottom: 12px;
 
 }
-
-
 
 .editor-summary-row {
 
@@ -1692,23 +1461,17 @@
 
 }
 
-
-
 .editor-summary-row:first-of-type {
 
   margin-top: 13px;
 
 }
 
-
-
 .editor-summary-row:last-child {
 
   border-bottom: 0;
 
 }
-
-
 
 .editor-summary-row > span {
 
@@ -1724,15 +1487,11 @@
 
 }
 
-
-
 .editor-summary-row > span svg {
 
   color: #82997d;
 
 }
-
-
 
 .editor-summary-row strong {
 
@@ -1745,8 +1504,6 @@
   text-align: right;
 
 }
-
-
 
 .editor-public-preview-button {
 
@@ -1780,15 +1537,11 @@
 
 }
 
-
-
 .editor-public-preview-button:hover {
 
   background: #e8f0e4;
 
 }
-
-
 
 .editor-private-note {
 
@@ -1808,15 +1561,11 @@
 
 }
 
-
-
 /* =========================================
 
    BASIC INFORMATION TAB
 
    ========================================= */
-
-
 
 .editor-panel {
 
@@ -1834,8 +1583,6 @@
 
 }
 
-
-
 .editor-cover-settings-heading h3 {
 
   margin: 0 0 5px;
@@ -1849,8 +1596,6 @@
   font-weight: 800;
 
 }
-
-
 
 .editor-cover-settings-heading p {
 
@@ -1866,8 +1611,6 @@
 
 }
 
-
-
 .editor-cover-settings-preview {
 
   display: flex;
@@ -1879,8 +1622,6 @@
   margin-top: 18px;
 
 }
-
-
 
 .editor-cover-settings-image,
 
@@ -1904,8 +1645,6 @@
 
 }
 
-
-
 .editor-cover-settings-empty {
 
   display: flex;
@@ -1924,8 +1663,6 @@
 
 }
 
-
-
 .editor-cover-settings-actions {
 
   display: flex;
@@ -1938,15 +1675,11 @@
 
 }
 
-
-
 .editor-cover-settings-actions label {
 
   cursor: pointer;
 
 }
-
-
 
 .editor-help-text {
 
@@ -1960,15 +1693,11 @@
 
 }
 
-
-
 /* =========================================
 
    LOADING AND ERROR STATES
 
    ========================================= */
-
-
 
 .editor-loading,
 
@@ -1994,8 +1723,6 @@
 
 }
 
-
-
 .editor-loading p,
 
 .editor-load-error p {
@@ -2008,8 +1735,6 @@
 
 }
 
-
-
 .editor-load-error h2 {
 
   margin: 0;
@@ -2021,8 +1746,6 @@
   font-size: 22px;
 
 }
-
-
 
 .editor-load-error button {
 
@@ -2050,15 +1773,11 @@
 
 }
 
-
-
 /* =========================================
 
    RESPONSIVE
 
    ========================================= */
-
-
 
 @media (max-width: 1250px) {
 
@@ -2070,8 +1789,6 @@
 
   }
 
-
-
   .editor-layout {
 
     grid-template-columns: minmax(0, 1fr) 275px;
@@ -2080,8 +1797,6 @@
 
   }
 
-
-
   .editor-step-card {
 
     grid-template-columns: 32px 120px minmax(0, 1fr);
@@ -2089,8 +1804,6 @@
     gap: 11px;
 
   }
-
-
 
   .editor-step-image {
 
@@ -2102,8 +1815,6 @@
 
 }
 
-
-
 @media (max-width: 1050px) {
 
   .editor-layout {
@@ -2111,8 +1822,6 @@
     grid-template-columns: 1fr;
 
   }
-
-
 
   .editor-aside {
 
@@ -2124,8 +1833,6 @@
 
   }
 
-
-
   .editor-summary-card,
 
   .editor-public-preview-button,
@@ -2136,8 +1843,6 @@
 
   }
 
-
-
   .editor-project-header {
 
     grid-template-columns: minmax(0, 1fr) 235px;
@@ -2146,17 +1851,7 @@
 
 }
 
-
-
 @media (max-width: 750px) {
-
-  .project-editor-content {
-
-    padding: 22px 17px 25px;
-
-  }
-
-
 
   .editor-project-header {
 
@@ -2168,8 +1863,6 @@
 
   }
 
-
-
   .editor-cover-frame {
 
     width: 100%;
@@ -2177,8 +1870,6 @@
     height: 190px;
 
   }
-
-
 
   .editor-tabs {
 
@@ -2188,8 +1879,6 @@
 
   }
 
-
-
   .editor-tab {
 
     justify-content: flex-start;
@@ -2197,8 +1886,6 @@
     padding-left: 13px;
 
   }
-
-
 
   .editor-section-heading {
 
@@ -2208,15 +1895,11 @@
 
   }
 
-
-
   .editor-step-card {
 
     grid-template-columns: 34px minmax(0, 1fr);
 
   }
-
-
 
   .editor-step-image {
 
@@ -2230,8 +1913,6 @@
 
   }
 
-
-
   .editor-step-number {
 
     grid-column: 1;
@@ -2240,23 +1921,17 @@
 
   }
 
-
-
   .editor-step-information {
 
     grid-column: 1 / -1;
 
   }
 
-
-
   .editor-aside {
 
     grid-template-columns: 1fr;
 
   }
-
-
 
   .editor-summary-card,
 
@@ -2270,17 +1945,7 @@
 
 }
 
-
-
 @media (max-width: 500px) {
-
-  .project-editor-content {
-
-    padding: 16px 12px 22px;
-
-  }
-
-
 
   .editor-project-header {
 
@@ -2288,23 +1953,17 @@
 
   }
 
-
-
   .editor-project-heading h1 {
 
     font-size: 25px;
 
   }
 
-
-
   .editor-project-heading > p {
 
     font-size: 11px;
 
   }
-
-
 
   .editor-tab {
 
@@ -2318,15 +1977,11 @@
 
   }
 
-
-
   .editor-section-heading h2 {
 
     font-size: 21px;
 
   }
-
-
 
   .editor-step-card {
 
@@ -2334,23 +1989,17 @@
 
   }
 
-
-
   .editor-step-title-row h3 {
 
     font-size: 14px;
 
   }
 
-
-
   .editor-step-actions {
 
     gap: 6px;
 
   }
-
-
 
   .editor-step-actions button,
 
@@ -2360,8 +2009,6 @@
 
   }
 
-
-
   .editor-panel,
 
   .editor-step-form {
@@ -2370,8 +2017,6 @@
 
   }
 
-
-
   .editor-cover-settings-preview {
 
     align-items: flex-start;
@@ -2379,8 +2024,6 @@
     flex-direction: column;
 
   }
-
-
 
   .editor-cover-settings-image,
 
@@ -2392,8 +2035,6 @@
 
   }
 
-
-
   .editor-cover-settings-actions {
 
     flex-direction: row;
@@ -2402,15 +2043,11 @@
 
   }
 
-
-
   .editor-form-actions {
 
     justify-content: stretch;
 
   }
-
-
 
   .editor-form-actions button {
 
@@ -2420,15 +2057,11 @@
 
 }
 
-
-
 /* =========================================
 
    PROJEKTA MATERIĀLI
 
-========================================= */
-
-
+\========================================= */
 
 .editor-material-form {
 
@@ -2452,8 +2085,6 @@
 
 }
 
-
-
 .editor-material-form-row {
 
   display: grid;
@@ -2464,8 +2095,6 @@
 
 }
 
-
-
 .editor-material-list {
 
   display: grid;
@@ -2475,8 +2104,6 @@
   gap: 16px;
 
 }
-
-
 
 .editor-material-card {
 
@@ -2500,8 +2127,6 @@
 
 }
 
-
-
 .editor-material-card:hover {
 
   transform: translateY(-2px);
@@ -2509,8 +2134,6 @@
   box-shadow: 0 8px 22px rgba(45, 75, 55, 0.07);
 
 }
-
-
 
 .editor-material-main {
 
@@ -2521,8 +2144,6 @@
   gap: 13px;
 
 }
-
-
 
 .editor-material-icon {
 
@@ -2546,8 +2167,6 @@
 
 }
 
-
-
 .editor-material-information {
 
   min-width: 0;
@@ -2555,8 +2174,6 @@
   flex: 1;
 
 }
-
-
 
 .editor-material-information h3 {
 
@@ -2572,8 +2189,6 @@
 
 }
 
-
-
 .editor-material-stock {
 
   display: block;
@@ -2584,8 +2199,6 @@
 
 }
 
-
-
 .editor-material-stock strong {
 
   color: #376d4e;
@@ -2593,8 +2206,6 @@
   font-size: 15px;
 
 }
-
-
 
 .editor-material-linked {
 
@@ -2605,8 +2216,6 @@
   font-size: 11px;
 
 }
-
-
 
 .editor-material-notes {
 
@@ -2634,8 +2243,6 @@
 
 }
 
-
-
 .editor-material-notes svg {
 
   flex-shrink: 0;
@@ -2643,8 +2250,6 @@
   margin-top: 1px;
 
 }
-
-
 
 .editor-material-restock {
 
@@ -2661,8 +2266,6 @@
   border-top: 1px solid #edf0e9;
 
 }
-
-
 
 .editor-material-restock label {
 
@@ -2681,8 +2284,6 @@
   font-weight: 600;
 
 }
-
-
 
 .editor-material-restock input {
 
@@ -2710,8 +2311,6 @@
 
 }
 
-
-
 .editor-material-restock input:focus {
 
   border-color: #78a681;
@@ -2719,8 +2318,6 @@
   box-shadow: 0 0 0 3px rgba(120, 166, 129, 0.12);
 
 }
-
-
 
 .editor-material-restock .editor-secondary-button {
 
@@ -2733,8 +2330,6 @@
   font-size: 12px;
 
 }
-
-
 
 .editor-material-actions {
 
@@ -2752,8 +2347,6 @@
 
 }
 
-
-
 .editor-material-actions .editor-small-button {
 
   flex: 1;
@@ -2762,8 +2355,6 @@
 
 }
 
-
-
 .editor-material-actions .editor-small-button:disabled {
 
   cursor: not-allowed;
@@ -2771,8 +2362,6 @@
   opacity: 0.45;
 
 }
-
-
 
 @media (max-width: 900px) {
 
@@ -2784,8 +2373,6 @@
 
 }
 
-
-
 @media (max-width: 520px) {
 
   .editor-material-form {
@@ -2793,8 +2380,6 @@
     padding: 17px;
 
   }
-
-
 
   .editor-material-form-row {
 
@@ -2804,15 +2389,11 @@
 
   }
 
-
-
   .editor-material-card {
 
     padding: 16px;
 
   }
-
-
 
   .editor-material-restock {
 
@@ -2821,8 +2402,6 @@
     flex-direction: column;
 
   }
-
-
 
   .editor-material-restock .editor-secondary-button {
 
@@ -2834,15 +2413,11 @@
 
 }
 
-
-
 /* =========================================
 
    SOĻA ATTĒLI UN MATERIĀLU IZVĒLE
 
-========================================= */
-
-
+\========================================= */
 
 .editor-step-extra-section {
 
@@ -2855,8 +2430,6 @@
   border-radius: 15px;
 
 }
-
-
 
 .editor-step-extra-heading {
 
@@ -2872,8 +2445,6 @@
 
 }
 
-
-
 .editor-step-extra-heading h3 {
 
   margin: 0 0 6px;
@@ -2886,8 +2457,6 @@
 
 }
 
-
-
 .editor-step-extra-heading p {
 
   margin: 0;
@@ -2899,8 +2468,6 @@
   line-height: 1.6;
 
 }
-
-
 
 .editor-step-extra-section input[type='file'] {
 
@@ -2920,8 +2487,6 @@
 
 }
 
-
-
 .editor-selected-file {
 
   display: flex;
@@ -2939,8 +2504,6 @@
   overflow-wrap: anywhere;
 
 }
-
-
 
 .editor-no-materials {
 
@@ -2964,8 +2527,6 @@
 
 }
 
-
-
 .editor-no-materials > svg {
 
   flex-shrink: 0;
@@ -2973,8 +2534,6 @@
   color: #769679;
 
 }
-
-
 
 .editor-no-materials p {
 
@@ -2990,8 +2549,6 @@
 
 }
 
-
-
 .editor-step-material-draft-list {
 
   display: flex;
@@ -3001,8 +2558,6 @@
   gap: 12px;
 
 }
-
-
 
 .editor-step-material-row {
 
@@ -3024,8 +2579,6 @@
 
 }
 
-
-
 .editor-step-material-row .editor-field {
 
   margin: 0;
@@ -3033,8 +2586,6 @@
   min-width: 0;
 
 }
-
-
 
 .editor-step-material-row select,
 
@@ -3045,8 +2596,6 @@
   min-width: 0;
 
 }
-
-
 
 .editor-step-material-remove {
 
@@ -3060,15 +2609,11 @@
 
 }
 
-
-
 .editor-step-material-remove:hover {
 
   background: #f9eae5;
 
 }
-
-
 
 @media (max-width: 650px) {
 
@@ -3078,15 +2623,11 @@
 
   }
 
-
-
   .editor-step-material-row {
 
     grid-template-columns: 1fr 1fr 38px;
 
   }
-
-
 
   .editor-step-material-row .editor-field:first-child {
 
@@ -3097,185 +2638,325 @@
 }
 
 /* =========================================
+
    PROJECT GALLERY
-========================================= */
+
+\========================================= */
 
 .editor-gallery-visibility {
+
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
   gap: 18px;
+
   padding: 18px;
+
   margin-bottom: 22px;
+
   background: #f5f7f1;
+
   border: 1px solid #e5ebe1;
+
   border-radius: 14px;
+
 }
 
 .editor-gallery-visibility-info {
+
   display: flex;
+
   align-items: center;
+
   gap: 13px;
+
   min-width: 0;
+
 }
 
 .editor-gallery-visibility-icon,
+
 .editor-gallery-upload-icon {
+
   display: flex;
+
   align-items: center;
+
   justify-content: center;
+
   flex-shrink: 0;
+
   width: 43px;
+
   height: 43px;
+
   color: #477657;
+
   background: #e8f0e5;
+
   border-radius: 12px;
+
 }
 
 .editor-gallery-visibility-info strong {
+
   display: block;
+
   color: #294c3d;
+
   font-size: 14px;
+
 }
 
 .editor-gallery-visibility-info p {
+
   margin: 5px 0 0;
+
   color: #7b897c;
+
   font-size: 12px;
+
   line-height: 1.5;
+
 }
 
 .editor-gallery-upload {
+
   padding: 21px;
+
   margin-bottom: 28px;
+
   background: #fff;
+
   border: 1px solid #e5ebe1;
+
   border-radius: 15px;
+
 }
 
 .editor-gallery-upload-heading {
+
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
   margin-bottom: 18px;
+
 }
 
 .editor-gallery-upload-heading h3,
+
 .editor-gallery-list-heading h3 {
+
   margin: 0;
+
   color: #294c3d;
+
   font-size: 16px;
+
 }
 
 .editor-gallery-upload-heading p {
+
   margin: 6px 0 0;
+
   color: #839083;
+
   font-size: 12px;
+
 }
 
 .editor-gallery-file-button {
+
   display: inline-flex;
+
   width: fit-content;
+
   margin-top: 12px;
+
   cursor: pointer;
+
 }
 
 .editor-gallery-list-heading {
+
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
   margin-bottom: 16px;
+
 }
 
 .editor-gallery-list-heading span {
+
   display: block;
+
   margin-top: 5px;
+
   color: #899487;
+
   font-size: 12px;
+
 }
 
 .editor-gallery-grid {
+
   display: grid;
+
   grid-template-columns: repeat(2, minmax(0, 1fr));
+
   gap: 18px;
+
 }
 
 .editor-gallery-card {
+
   min-width: 0;
+
   overflow: hidden;
+
   background: #fff;
+
   border: 1px solid #e5ebe1;
+
   border-radius: 14px;
+
 }
 
 .editor-gallery-image {
+
   width: 100%;
+
   height: 210px;
+
   overflow: hidden;
+
   background: #f1f3ed;
+
 }
 
 .editor-gallery-photo {
+
   display: block;
+
   width: 100%;
+
   height: 100%;
+
   object-fit: cover;
+
 }
 
 .editor-gallery-card-content {
+
   padding: 15px;
+
 }
 
 .editor-gallery-actions {
+
   display: flex;
+
   gap: 9px;
+
   margin-top: 13px;
+
   padding-top: 12px;
+
   border-top: 1px solid #edf0e9;
+
 }
 
 .editor-gallery-actions .editor-small-button {
+
   flex: 1;
+
   justify-content: center;
+
 }
 
 .editor-gallery-empty {
+
   padding: 42px 20px;
+
   text-align: center;
+
   background: #fafbf8;
+
   border: 1px dashed #dce5d8;
+
   border-radius: 15px;
+
 }
 
 .editor-gallery-empty h3 {
+
   margin: 14px 0 7px;
+
   color: #294c3d;
+
   font-size: 16px;
+
 }
 
 .editor-gallery-empty p {
+
   max-width: 390px;
+
   margin: 0 auto;
+
   color: #879184;
+
   font-size: 13px;
+
   line-height: 1.6;
+
 }
 
 @media (max-width: 700px) {
+
   .editor-gallery-visibility {
+
     align-items: flex-start;
+
     flex-direction: column;
+
   }
 
   .editor-gallery-grid {
+
     grid-template-columns: 1fr;
+
   }
 
   .editor-gallery-image {
+
     height: 230px;
+
   }
 
   .editor-gallery-upload {
+
     padding: 16px;
+
   }
+
+}
+
+/* AppLayout integration: shared layout owns the outer page spacing. */
+.project-editor-content {
+  box-sizing: border-box;
+}
+
+.editor-loading,
+.editor-load-error {
+  width: 100%;
 }

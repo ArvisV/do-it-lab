@@ -1,191 +1,18 @@
 
-.dashboard-shell {
-  min-height: 100vh;
-  background: var(--color-bg);
-}
-
-.dashboard-sidebar {
-  position: fixed;
-  inset: 0 auto 0 0;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  width: 250px;
-  padding: 28px 20px 22px;
-  border-right: 1px solid var(--color-border);
-  background: var(--color-bg);
-}
-
-.dashboard-logo {
-  padding: 0 8px 30px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.dashboard-nav {
-  display: grid;
-  gap: 8px;
-  margin-top: 28px;
-}
-
-
-.dashboard-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  min-height: 48px;
-  padding: 12px 16px;
-  border: 0;
-  border-radius: 14px;
-  background: transparent;
-  color: var(--color-text-muted);
-  font-size: 14px;
-  text-align: left;
-  cursor: pointer;
-  transition: background 180ms ease, color 180ms ease;
-}
-
-.dashboard-nav-link .nav-icon {
-  width: 23px;
-  height: 23px;
-  flex-shrink: 0;
-  stroke-width: 1.8;
-}
-
-.dashboard-nav-link:hover,
-.dashboard-nav-link.active {
-  background: var(--color-green-light);
-  color: var(--color-green-dark);
-}
-
-.dashboard-nav-link.active .nav-icon {
-  fill: var(--color-green);
-  stroke: var(--color-green);
-}
-
-
-.sidebar-bottom {
-  margin-top: auto;
-}
-
-.sidebar-motto {
-  padding: 0 12px 20px;
-  color: var(--color-green);
-  font-family: var(--font-heading);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  line-height: 1.9;
-}
-
-.logout-button {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  cursor: pointer;
-}
-
-.dashboard-main {
-  min-width: 0;
-  margin-left: 250px;
-}
-
-.dashboard-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  min-height: 82px;
-  padding: 14px clamp(24px, 4vw, 54px);
-  border-bottom: 1px solid var(--color-border);
-  background: rgba(247, 245, 238, 0.96);
-  backdrop-filter: blur(14px);
-}
-
-.dashboard-search {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: min(580px, 68%);
-  min-height: 46px;
-  padding: 0 16px;
-  border: 1px solid transparent;
-  border-radius: 15px;
-  background: var(--color-surface-soft);
-  color: var(--color-text-muted);
-}
-
-.dashboard-search:focus-within {
-  border-color: var(--color-green);
-}
-
-.dashboard-search > span {
-  font-size: 25px;
-}
-
-.dashboard-search input {
-  width: 100%;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--color-text);
-  font-size: 14px;
-}
-
-.dashboard-search input:focus-visible {
-  outline: 0;
-}
-
-.clear-search {
-  border: 0;
-  background: transparent;
-  color: var(--color-text-muted);
-  font-size: 22px;
-}
-
-.dashboard-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 5px;
-  border: 0;
-  background: transparent;
-  color: var(--color-text);
-  cursor: pointer;
-}
-
-.user-avatar,
-.author-avatar {
-  display: grid;
-  flex-shrink: 0;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--color-green-soft);
-  color: var(--color-green-dark);
-  font-weight: 600;
-}
-
-.user-name {
-  max-width: 150px;
-  overflow: hidden;
-  font-size: 13px;
-  text-overflow: ellipsis;
-}
+/* =========================================
+   DASHBOARD PAMATA IZKĀRTOJUMS
+========================================= */
 
 .dashboard-content {
   width: min(1440px, 100%);
+  min-width: 0;
   margin: 0 auto;
-  padding: 0 clamp(24px, 3vw, 44px) 28px;
+  padding: 0 0 28px;
 }
+
+/* =========================================
+   SVEICIENA BLOKS
+========================================= */
 
 .welcome-banner {
   position: relative;
@@ -228,11 +55,9 @@
   line-height: 1.7;
 }
 
-
 .welcome-photo {
   position: absolute;
   inset: 0 0 0 43%;
-
   background-image:
     linear-gradient(
       90deg,
@@ -241,12 +66,10 @@
       transparent 55%
     ),
     url('/images/dashboard-welcome.jpg');
-
   background-position: center, center 52%;
   background-size: cover;
   background-repeat: no-repeat;
 }
-
 
 .welcome-note {
   position: absolute;
@@ -269,6 +92,10 @@
   font-size: 22px;
 }
 
+/* =========================================
+   KATEGORIJAS
+========================================= */
+
 .dashboard-category-section {
   display: flex;
   align-items: stretch;
@@ -285,12 +112,12 @@
 
 .category-button {
   display: flex;
+  min-width: 0;
+  min-height: 88px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 0;
-  min-height: 88px;
   padding: 12px 8px;
   border: 1px solid transparent;
   border-radius: 15px;
@@ -321,6 +148,10 @@
   stroke: var(--color-green);
 }
 
+/* =========================================
+   POGAS
+========================================= */
+
 .dashboard-primary-button {
   display: inline-flex;
   align-items: center;
@@ -336,7 +167,9 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 180ms ease, transform 180ms ease;
+  transition:
+    background 180ms ease,
+    transform 180ms ease;
 }
 
 .dashboard-primary-button:hover {
@@ -352,6 +185,28 @@
 
 .create-project-button > span {
   font-size: 22px;
+}
+
+.dashboard-secondary-button {
+  padding: 11px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-green);
+  cursor: pointer;
+  transition: background 180ms ease;
+}
+
+.dashboard-secondary-button:hover {
+  background: var(--color-surface-soft);
+}
+
+/* =========================================
+   PROJEKTU SADAĻA
+========================================= */
+
+.dashboard-projects {
+  min-width: 0;
 }
 
 .dashboard-section-heading {
@@ -391,7 +246,9 @@
   border-radius: 15px;
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .dashboard-project-card:hover {
@@ -399,17 +256,21 @@
   box-shadow: var(--shadow-md);
 }
 
+/* Vienāda attēlu proporcija visām projektu kartītēm. */
 .dashboard-project-image {
   position: relative;
-  height: 155px;
+  width: 100%;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   background: var(--color-green-soft);
 }
 
 .dashboard-project-image img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   transition: transform 250ms ease;
 }
 
@@ -417,34 +278,24 @@
   transform: scale(1.04);
 }
 
-.dashboard-status {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  display: inline-flex;
+.dashboard-project-placeholder {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
   align-items: center;
-  gap: 7px;
-  padding: 7px 11px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.95);
-  color: var(--color-text);
-  font-size: 11px;
-  font-weight: 600;
+  justify-content: center;
+  gap: 10px;
+  background: #e9efe6;
+  color: #77917d;
 }
 
-.dashboard-status > span {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #5a9a6b;
-}
-
-.status-progress > span {
-  background: var(--color-accent);
-}
-
-.status-planned > span {
-  background: var(--color-blue);
+.dashboard-project-placeholder span {
+  padding: 0 12px;
+  color: #788579;
+  font-size: 12px;
+  text-align: center;
 }
 
 .dashboard-project-info {
@@ -463,6 +314,18 @@
   line-height: 1.5;
 }
 
+.dashboard-project-description {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 8px 0 12px;
+  color: #727a74;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .dashboard-project-footer {
   padding-top: 11px;
   border-top: 1px solid var(--color-border);
@@ -477,10 +340,21 @@
 }
 
 .author-avatar {
+  display: grid;
   width: 28px;
   height: 28px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-green-soft);
+  color: var(--color-green-dark);
   font-size: 11px;
+  font-weight: 600;
 }
+
+/* =========================================
+   TUKŠIE STĀVOKĻI UN KĻŪDU PAZIŅOJUMI
+========================================= */
 
 .dashboard-empty {
   display: grid;
@@ -505,21 +379,12 @@
   font-size: 13px;
 }
 
-.dashboard-secondary-button {
-  padding: 11px 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  background: var(--color-surface);
-  color: var(--color-green);
-  cursor: pointer;
-}
-
 .dashboard-notice {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin: 18px 0;
+  margin: 0 0 18px;
   padding: 12px 16px;
   border: 1px solid var(--color-border);
   border-radius: 12px;
@@ -529,11 +394,17 @@
 }
 
 .dashboard-notice button {
+  flex-shrink: 0;
   border: 0;
   background: transparent;
   color: var(--color-text-muted);
   font-size: 21px;
+  cursor: pointer;
 }
+
+/* =========================================
+   FOOTER
+========================================= */
 
 .dashboard-footer {
   margin-top: 36px;
@@ -544,9 +415,13 @@
   text-align: center;
 }
 
+/* =========================================
+   IELĀDES STĀVOKLIS
+========================================= */
+
 .dashboard-loading {
   display: flex;
-  min-height: 100vh;
+  min-height: 60vh;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -571,22 +446,11 @@
   }
 }
 
-@media (min-width: 1500px) {
-  .dashboard-project-image {
-    height: 185px;
-  }
-}
+/* =========================================
+   RESPONSĪVAIS DIZAINS
+========================================= */
 
 @media (max-width: 1200px) {
-  .dashboard-sidebar {
-    width: 215px;
-    padding-inline: 14px;
-  }
-
-  .dashboard-main {
-    margin-left: 215px;
-  }
-
   .dashboard-category-section {
     flex-direction: column;
   }
@@ -605,72 +469,8 @@
 }
 
 @media (max-width: 760px) {
-  .dashboard-sidebar {
-    position: static;
-    width: 100%;
-    padding: 16px 18px;
-    border-right: 0;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .dashboard-logo {
-    padding: 0 0 12px;
-    border-bottom: 0;
-  }
-
-  .dashboard-nav {
-    display: flex;
-    gap: 7px;
-    margin-top: 8px;
-    overflow-x: auto;
-  }
-
-  .dashboard-nav-link {
-    width: auto;
-    flex-shrink: 0;
-    padding: 10px 12px;
-    font-size: 12px;
-  }
-
-  .dashboard-nav-link > span {
-    width: auto;
-    font-size: 17px;
-  }
-
-  .sidebar-bottom {
-    display: none;
-  }
-
-  .dashboard-main {
-    margin-left: 0;
-  }
-
-  .dashboard-topbar {
-    position: static;
-    min-height: 70px;
-    padding: 12px 18px;
-  }
-
-  .dashboard-search {
-    width: 100%;
-    min-height: 42px;
-  }
-
-  .dashboard-user {
-    gap: 6px;
-  }
-
-  .user-avatar {
-    width: 32px;
-    height: 32px;
-  }
-
-  .user-name {
-    display: none;
-  }
-
   .dashboard-content {
-    padding-inline: 18px;
+    padding-bottom: 20px;
   }
 
   .welcome-banner {
@@ -697,8 +497,13 @@
   .welcome-photo {
     inset: 135px 0 0;
     background-image:
-      linear-gradient(180deg, var(--color-green-light) 0%, transparent 35%),
-      url('https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=1000&q=85');
+      linear-gradient(
+        180deg,
+        var(--color-green-light) 0%,
+        transparent 35%
+      ),
+      url('/images/dashboard-welcome.jpg');
+    background-position: center, center;
   }
 
   .welcome-note {
@@ -728,10 +533,6 @@
     gap: 12px;
   }
 
-  .dashboard-project-image {
-    height: 125px;
-  }
-
   .dashboard-project-info {
     padding: 12px;
   }
@@ -746,196 +547,11 @@
     grid-template-columns: 1fr;
   }
 
-  .dashboard-project-image {
-    height: 190px;
-  }
-
   .dashboard-section-heading h2 {
     font-size: 22px;
   }
 
   .project-count {
     font-size: 10px;
-  }
-}
-
-
-.dashboard-project-placeholder {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  min-height: 170px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: #e9efe6;
-  color: #77917d;
-}
-
-.dashboard-project-placeholder span {
-  color: #788579;
-  font-size: 12px;
-}
-
-.dashboard-project-description {
-  display: -webkit-box;
-  overflow: hidden;
-  margin: 8px 0 12px;
-  color: #727a74;
-  font-size: 13px;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-
-/* =====================================================
-   DASHBOARD PROFILA IZVĒLNE
-===================================================== */
-
-.dashboard-profile-wrapper {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.dashboard-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 8px;
-  border: 0;
-  border-radius: 14px;
-  background: transparent;
-  color: var(--color-text);
-  cursor: pointer;
-  transition: background 180ms ease;
-}
-
-.dashboard-user:hover,
-.dashboard-user[aria-expanded="true"] {
-  background: var(--color-surface-soft);
-}
-
-.dashboard-user > svg {
-  color: var(--color-text-muted);
-}
-
-.profile-dropdown {
-  position: absolute;
-  top: calc(100% + 12px);
-  right: 0;
-  z-index: 20;
-  width: 270px;
-  padding: 12px;
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  background: var(--color-surface);
-  box-shadow: var(--shadow-md);
-  animation: profile-dropdown-appear 160ms ease;
-}
-
-.profile-dropdown-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 5px 12px;
-}
-
-.profile-dropdown-avatar {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  flex-shrink: 0;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--color-green-soft);
-  color: var(--color-green-dark);
-  font-size: 17px;
-  font-weight: 700;
-}
-
-.profile-dropdown-text {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.profile-dropdown-text strong {
-  overflow: hidden;
-  color: var(--color-text);
-  font-size: 13px;
-  text-overflow: ellipsis;
-}
-
-.profile-dropdown-text span {
-  overflow: hidden;
-  color: var(--color-text-muted);
-  font-size: 11px;
-  text-overflow: ellipsis;
-}
-
-.profile-dropdown-divider {
-  height: 1px;
-  margin: 4px 0 8px;
-  background: var(--color-border);
-}
-
-.profile-dropdown-item {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 11px;
-  padding: 11px 10px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--color-text);
-  font-size: 13px;
-  text-align: left;
-  cursor: pointer;
-  transition: background 160ms ease;
-}
-
-.profile-dropdown-item:hover {
-  background: var(--color-surface-soft);
-}
-
-.profile-dropdown-item svg {
-  color: var(--color-text-muted);
-}
-
-.profile-dropdown-item.logout {
-  color: #b64c45;
-}
-
-.profile-dropdown-item.logout svg {
-  color: #b64c45;
-}
-
-.dashboard-catalog-link {
-  display: flex;
-  justify-content: center;
-  margin-top: 28px;
-}
-
-@keyframes profile-dropdown-appear {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 760px) {
-  .profile-dropdown {
-    right: 0;
-    width: min(270px, calc(100vw - 30px));
   }
 }

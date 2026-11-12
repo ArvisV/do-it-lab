@@ -3,54 +3,24 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import {
-
-  House,
-
-  Folder,
-
-  FolderSearch,
-
   CirclePlus,
-
-  Bookmark,
-
-  Heart,
-
-  UserRound,
-
   Leaf,
-
   Search,
-
   X,
-
   CalendarDays,
-
   Layers3,
-
   ArrowUpRight,
-
   Eye,
-
   EyeOff,
-
   Sprout,
-
   CheckCircle2,
-
 } from 'lucide-react'
 
-
-
-import Logo from '../components/Logo'
 
 import './MyProjectsPage.css'
 
 
-
 const API_URL = 'http://localhost:5000/api'
-
-
 
 
 type Project = {
@@ -86,9 +56,7 @@ type Project = {
 }
 
 
-
 type ProjectFilter = 'all' | 'published' | 'private'
-
 
 
 function formatDate(date: string) {
@@ -106,11 +74,9 @@ function formatDate(date: string) {
 }
 
 
-
 function MyProjectsPage() {
 
   const navigate = useNavigate()
-
 
 
   const [projects, setProjects] = useState<Project[]>([])
@@ -124,7 +90,6 @@ function MyProjectsPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null)
 
 
-
   const [search, setSearch] = useState('')
 
   const [activeFilter, setActiveFilter] =
@@ -132,13 +97,11 @@ function MyProjectsPage() {
     useState<ProjectFilter>('all')
 
 
-
   const loadProjects = useCallback(async () => {
 
     setLoading(true)
 
     setError('')
-
 
 
     try {
@@ -152,7 +115,6 @@ function MyProjectsPage() {
       })
 
 
-
       if (response.status === 401) {
 
         navigate('/login', { replace: true })
@@ -162,9 +124,7 @@ function MyProjectsPage() {
       }
 
 
-
       const data = await response.json()
-
 
 
       if (!response.ok) {
@@ -176,7 +136,6 @@ function MyProjectsPage() {
         )
 
       }
-
 
 
       setProjects(data.projects ?? [])
@@ -202,13 +161,11 @@ function MyProjectsPage() {
   }, [navigate])
 
 
-
   useEffect(() => {
 
     void loadProjects()
 
   }, [loadProjects])
-
 
 
   const publishedCount = projects.filter(
@@ -218,13 +175,11 @@ function MyProjectsPage() {
   ).length
 
 
-
   const privateCount = projects.filter(
 
     (project) => !project.isPublished,
 
   ).length
-
 
 
   const totalSteps = projects.reduce(
@@ -236,11 +191,9 @@ function MyProjectsPage() {
   )
 
 
-
   const filteredProjects = useMemo(() => {
 
     const query = search.trim().toLowerCase()
-
 
 
     return projects.filter((project) => {
@@ -254,7 +207,6 @@ function MyProjectsPage() {
         (activeFilter === 'private' && !project.isPublished)
 
 
-
       const matchesSearch =
 
         !query ||
@@ -266,7 +218,6 @@ function MyProjectsPage() {
         (project.category?.name ?? '').toLowerCase().includes(query)
 
 
-
       return matchesFilter && matchesSearch
 
     })
@@ -274,11 +225,9 @@ function MyProjectsPage() {
   }, [projects, search, activeFilter])
 
 
-
   async function toggleVisibility(project: Project) {
 
     const nextVisibility = !project.isPublished
-
 
 
     const confirmed = window.confirm(
@@ -292,9 +241,7 @@ function MyProjectsPage() {
     )
 
 
-
     if (!confirmed) return
-
 
 
     setUpdatingId(project.id)
@@ -302,7 +249,6 @@ function MyProjectsPage() {
     setError('')
 
     setNotice('')
-
 
 
     try {
@@ -334,9 +280,7 @@ function MyProjectsPage() {
       )
 
 
-
       const data = await response.json()
-
 
 
       if (!response.ok) {
@@ -348,7 +292,6 @@ function MyProjectsPage() {
         )
 
       }
-
 
 
       setProjects((current) =>
@@ -364,7 +307,6 @@ function MyProjectsPage() {
         ),
 
       )
-
 
 
       setNotice(
@@ -398,15 +340,6 @@ function MyProjectsPage() {
   }
 
 
-
-  function handleProfile() {
-
-    setNotice('Profila lapu pievienosim nākamajā izstrādes solī.')
-
-  }
-
-
-
   function openProject(projectId: string) {
 
     navigate(`/projects/${projectId}/manage`)
@@ -414,198 +347,9 @@ function MyProjectsPage() {
   }
 
 
-
   return (
 
-    <div className="workspace-shell">
-
-      <aside className="workspace-sidebar">
-
-        <div className="workspace-logo">
-
-          <Logo />
-
-        </div>
-
-
-
-        <nav
-
-          className="workspace-navigation"
-
-          aria-label="Lietotāja navigācija"
-
-        >
-
-          <button
-
-            className="workspace-nav-link"
-
-            onClick={() => navigate('/dashboard')}
-
-          >
-
-            <House />
-
-            <span>Sākums</span>
-
-          </button>
-
-
-
-          <button
-
-            className="workspace-nav-link"
-
-            onClick={() => navigate('/projects')}
-
-          >
-
-            <FolderSearch />
-
-            <span>Projektu katalogs</span>
-
-          </button>
-
-
-
-          <button
-
-            className="workspace-nav-link"
-
-            onClick={() => navigate('/projects/new')}
-
-          >
-
-            <CirclePlus />
-
-            <span>Izveidot projektu</span>
-
-          </button>
-
-
-
-          <button
-
-            className="workspace-nav-link active"
-
-            onClick={() => navigate('/projects/mine')}
-
-          >
-
-            <Bookmark />
-
-            <span>Mani projekti</span>
-
-          </button>
-
-
-
-          <button
-
-            className="workspace-nav-link"
-
-            onClick={() => navigate('/projects/saved')}
-
-          >
-
-            <Heart />
-
-            <span>Saglabātie</span>
-
-          </button>
-
-
-
-          <button
-
-            className="workspace-nav-link"
-
-            onClick={handleProfile}
-
-          >
-
-            <UserRound />
-
-            <span>Profils</span>
-
-          </button>
-
-        </nav>
-
-
-
-        <div className="workspace-sidebar-bottom">
-
-          <div className="workspace-sidebar-decoration">
-
-            <Sprout size={27} strokeWidth={1.4} />
-
-            <p>
-
-              RADI.
-
-              <br />
-
-              MĀCIES.
-
-              <br />
-
-              DALIES.
-
-            </p>
-
-          </div>
-
-
-
-          <button
-
-            className="workspace-home-button"
-
-            onClick={() => navigate('/dashboard')}
-
-          >
-
-            <House size={18} />
-
-            Atpakaļ uz sākumu
-
-          </button>
-
-        </div>
-
-      </aside>
-
-
-
-      <main className="workspace-main">
-
-        <header className="workspace-topbar">
-
-          <div className="workspace-breadcrumb">
-
-            <button onClick={() => navigate('/dashboard')}>
-
-              Sākums
-
-            </button>
-
-            <span>/</span>
-
-            <strong>Mani projekti</strong>
-
-          </div>
-
-
-
-
-
-        </header>
-
-
-
-        <div className="workspace-content">
+    <div className="workspace-content">
 
           <section className="workspace-hero">
 
@@ -618,9 +362,7 @@ function MyProjectsPage() {
               </span>
 
 
-
               <h1>Mani projekti</h1>
-
 
 
               <p>
@@ -630,7 +372,6 @@ function MyProjectsPage() {
                 dokumentē to tapšanu un dalies ar paveikto.
 
               </p>
-
 
 
               <button
@@ -648,7 +389,6 @@ function MyProjectsPage() {
               </button>
 
             </div>
-
 
 
             <div className="workspace-hero-art" aria-hidden="true">
@@ -684,7 +424,6 @@ function MyProjectsPage() {
           </section>
 
 
-
           <section className="workspace-stats">
 
             <article className="workspace-stat-card">
@@ -706,7 +445,6 @@ function MyProjectsPage() {
             </article>
 
 
-
             <article className="workspace-stat-card">
 
               <div className="workspace-stat-icon icon-published">
@@ -724,7 +462,6 @@ function MyProjectsPage() {
               </div>
 
             </article>
-
 
 
             <article className="workspace-stat-card">
@@ -746,7 +483,6 @@ function MyProjectsPage() {
             </article>
 
 
-
             <article className="workspace-stat-card">
 
               <div className="workspace-stat-icon icon-steps">
@@ -766,7 +502,6 @@ function MyProjectsPage() {
             </article>
 
           </section>
-
 
 
           {notice && (
@@ -794,7 +529,6 @@ function MyProjectsPage() {
           )}
 
 
-
           {error && (
 
             <div className="workspace-error" role="alert">
@@ -810,7 +544,6 @@ function MyProjectsPage() {
             </div>
 
           )}
-
 
 
           <section className="workspace-projects-section">
@@ -834,7 +567,6 @@ function MyProjectsPage() {
                 </p>
 
               </div>
-
 
 
               <div className="workspace-search">
@@ -876,7 +608,6 @@ function MyProjectsPage() {
             </div>
 
 
-
             <div className="workspace-filters">
 
               <button
@@ -892,7 +623,6 @@ function MyProjectsPage() {
                 <span>{projects.length}</span>
 
               </button>
-
 
 
               <button
@@ -914,7 +644,6 @@ function MyProjectsPage() {
               </button>
 
 
-
               <button
 
                 className={
@@ -934,7 +663,6 @@ function MyProjectsPage() {
               </button>
 
             </div>
-
 
 
             {loading ? (
@@ -1027,7 +755,6 @@ function MyProjectsPage() {
                   const isUpdating = updatingId === project.id
 
 
-
                   return (
 
                     <article
@@ -1065,7 +792,6 @@ function MyProjectsPage() {
                         </div>
 
 
-
                         <span
 
                           className={`workspace-status ${
@@ -1091,7 +817,6 @@ function MyProjectsPage() {
                       </div>
 
 
-
                       <div className="workspace-project-body">
 
                         <span className="workspace-project-category">
@@ -1101,9 +826,7 @@ function MyProjectsPage() {
                         </span>
 
 
-
                         <h3>{project.title}</h3>
-
 
 
                         <p className="workspace-project-description">
@@ -1111,7 +834,6 @@ function MyProjectsPage() {
                           {project.description}
 
                         </p>
-
 
 
                         <div className="workspace-project-meta">
@@ -1125,7 +847,6 @@ function MyProjectsPage() {
                           </span>
 
 
-
                           <span>
 
                             <CalendarDays size={15} />
@@ -1135,7 +856,6 @@ function MyProjectsPage() {
                           </span>
 
                         </div>
-
 
 
                         <div className="workspace-project-actions">
@@ -1155,7 +875,6 @@ function MyProjectsPage() {
                             <ArrowUpRight size={17} />
 
                           </button>
-
 
 
                           <button
@@ -1225,23 +944,14 @@ function MyProjectsPage() {
           </section>
 
 
-
           <footer className="workspace-footer">
 
             Do It Lab — idejām, kas pelnījušas kļūt īstas.
 
           </footer>
 
-        </div>
-
-      </main>
-
-    </div>
-
+      </div>
   )
-
 }
-
-
 
 export default MyProjectsPage

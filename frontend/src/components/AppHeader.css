@@ -1,0 +1,274 @@
+/* Do It Lab — botanical top header */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  min-height: 76px;
+  padding: 12px 36px;
+
+  border-bottom: 1px solid rgba(57, 91, 59, 0.14);
+  background: rgba(250, 248, 239, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.app-header-spacer {
+  position: relative;
+  align-self: stretch;
+  flex: 1;
+  min-width: 40px;
+}
+
+/* A fine botanical divider in the open space before the profile. */
+.app-header-spacer::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 34px;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(104, 137, 79, 0.12),
+    rgba(104, 137, 79, 0.72) 48%,
+    rgba(104, 137, 79, 0.22)
+  );
+  transform: translateY(-50%);
+}
+
+.app-header-spacer::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 17px;
+  height: 17px;
+  border-radius: 100% 0 100% 0;
+  background: #78965e;
+  box-shadow: 0 0 0 7px rgba(250, 248, 239, 0.96);
+  transform: translate(-50%, -58%) rotate(-28deg);
+}
+
+/* Profile button */
+.app-header-profile {
+  position: relative;
+  flex-shrink: 0;
+  margin-left: 22px;
+}
+
+.app-header-user {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 5px 8px 5px 5px;
+  border: 1px solid transparent;
+  border-radius: 24px;
+  background: transparent;
+  color: #244633;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.app-header-user:hover,
+.app-header-user[aria-expanded="true"] {
+  background: rgba(233, 239, 220, 0.72);
+  border-color: rgba(76, 111, 70, 0.12);
+}
+
+/* Avatar with a soft halo and a small leaf above it. */
+.app-header-avatar,
+.app-header-dropdown-avatar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 42px;
+  height: 42px;
+  border: 2px solid #fffdf3;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #285e43, #16472f);
+  color: #fffef5;
+  font-weight: 700;
+  box-shadow:
+    0 0 0 4px rgba(218, 226, 190, 0.9),
+    0 3px 10px rgba(34, 75, 48, 0.14);
+}
+
+/* Leaf decoration belongs to the main avatar only. */
+.app-header-avatar::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: -1px;
+  width: 10px;
+  height: 15px;
+  border-radius: 100% 0 100% 0;
+  background: #78965e;
+  transform: rotate(28deg);
+  box-shadow: 0 0 0 2px rgba(250, 248, 239, 0.96);
+}
+
+.app-header-avatar::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 5px;
+  width: 1px;
+  height: 10px;
+  border-radius: 1px;
+  background: #496f43;
+  transform: rotate(28deg);
+}
+
+.app-header-name {
+  max-width: 160px;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-header-user > svg {
+  color: #668354;
+  transition: transform 180ms ease;
+}
+
+.app-header-user > svg.rotated {
+  transform: rotate(180deg);
+}
+
+/* Profile dropdown */
+.app-header-dropdown {
+  position: absolute;
+  top: calc(100% + 13px);
+  right: 0;
+  z-index: 20;
+
+  width: 270px;
+  padding: 12px;
+
+  border: 1px solid rgba(57, 91, 59, 0.16);
+  border-radius: 18px;
+  background: #fffef9;
+  box-shadow: 0 14px 36px rgba(35, 63, 43, 0.15);
+  animation: app-header-appear 160ms ease;
+}
+
+.app-header-dropdown-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 5px 12px;
+}
+
+.app-header-dropdown-avatar {
+  width: 42px;
+  height: 42px;
+  font-size: 17px;
+}
+
+.app-header-dropdown-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 4px;
+}
+
+.app-header-dropdown-text strong {
+  overflow: hidden;
+  color: #244633;
+  font-size: 13px;
+  text-overflow: ellipsis;
+}
+
+.app-header-dropdown-text span {
+  color: #7b8878;
+  font-size: 11px;
+}
+
+.app-header-divider {
+  height: 1px;
+  margin: 4px 0 8px;
+  background: rgba(57, 91, 59, 0.13);
+}
+
+.app-header-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 11px 10px;
+
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: #294735;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.app-header-dropdown-item:hover {
+  background: #eef3e6;
+}
+
+.app-header-dropdown-item svg {
+  color: #668354;
+}
+
+.app-header-dropdown-item.logout,
+.app-header-dropdown-item.logout svg {
+  color: #b64c45;
+}
+
+@keyframes app-header-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 760px) {
+  .app-header {
+    min-height: 64px;
+    padding: 10px 18px;
+  }
+
+  .app-header-spacer::before {
+    right: 18px;
+  }
+
+  .app-header-name {
+    display: none;
+  }
+
+  .app-header-profile {
+    margin-left: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-header-user,
+  .app-header-user > svg,
+  .app-header-dropdown-item {
+    transition: none;
+  }
+}
